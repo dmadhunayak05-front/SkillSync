@@ -1,0 +1,26 @@
+{
+  "name": "skillsync-roshan",
+  "version": "1.0.0",
+  "description": "SkillSync - Learn • Teach • Grow Together",
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"magenta,cyan\" \"node server/src/server.js\" \"npm --prefix client run dev\"",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "node server/src/server.js",
+    "build": "npm --prefix client run build",
+    "start": "node server/src/server.js"
+  },
+  "keywords": [
+    "skillsync",
+    "peer-to-peer",
+    "google-meet",
+    "hackathon",
+    "react",
+    "express"
+  ],
+  "author": "SkillSync Team",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
