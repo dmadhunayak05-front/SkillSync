@@ -15,11 +15,21 @@ import ScheduleModal from '../sessions/ScheduleModal';
 
 export default function ChatWindow({ connectionId, onBack, onNavigate }) {
   const { currentUser, allUsers } = useAuth();
-  const { connections, messages, sendMessage } = useSync();
+  const { connections, messages, sendMessage, loadMessages } = useSync();
 
   const [text, setText] = useState('');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Load messages immediately on open and poll regularly for cross-browser real-time chat
+  useEffect(() => {
+    if (!connectionId) return;
+    loadMessages(connectionId);
+    const interval = setInterval(() => {
+      loadMessages(connectionId);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [connectionId, loadMessages]);
 
   const connection = connections.find(c => c.id === connectionId);
   const peerId = connection?.userIds.find(id => id !== currentUser?.uid);
@@ -101,43 +111,62 @@ export default function ChatWindow({ connectionId, onBack, onNavigate }) {
 
         {connectionMessages.map((msg) => {
           const isMe = msg.senderId === currentUser?.uid;
-          const isMeetMessage = msg.text.includes('meet.google.com');
+          const isMeetMessage = msg.type === 'meeting' || msg.text?.includes('meet.google.com') || Boolean(msg.meetingUri);
+          const meetUrl = msg.meetingUri || msg.text?.match(/https:\/\/meet\.google\.com\/[a-z0-9-]+/i)?.[0];
 
           return (
             <div
               key={msg.id}
               className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
             >
-              <div
-                className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-3.5 text-xs sm:text-sm shadow-xs ${
-                  isMe
-                    ? 'bg-brand-600 text-white rounded-br-xs'
-                    : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs'
-                }`}
-              >
-                {/* Regular text */}
-                <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>
-
-                {/* If contains Google Meet URL, render embedded 1-click Join Button! */}
-                {isMeetMessage && (
-                  <div className="mt-3 pt-2.5 border-t border-white/20 flex flex-col gap-2">
-                    <span className="text-[11px] font-bold text-emerald-200 flex items-center gap-1">
-                      <Video className="w-3.5 h-3.5" />
-                      Google Meet Conference Ready
+              {isMeetMessage ? (
+                /* Dedicated Google Meet Card */
+                <div className="max-w-[90%] sm:max-w-[75%] rounded-3xl p-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-md border border-indigo-900/50 space-y-3.5">
+                  <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                        <Video className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Google Meet</span>
+                        <h4 className="text-sm font-black tracking-tight">Learning Session</h4>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Confirmed Room
                     </span>
-                    <a
-                      href={msg.text.match(/https:\/\/meet\.google\.com\/[a-z0-9-]+/i)?.[0] || 'https://meet.google.com'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="py-2 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                    >
-                      <Video className="w-3.5 h-3.5" />
-                      Join Google Meet Call
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
                   </div>
-                )}
-              </div>
+
+                  <p className="text-xs text-slate-300 whitespace-pre-line leading-relaxed">
+                    {msg.text}
+                  </p>
+
+                  {meetUrl && (
+                    <div className="pt-1">
+                      <a
+                        href={meetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-500/25 transition-all"
+                      >
+                        <Video className="w-4 h-4" />
+                        <span>Join Google Meet</span>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-3.5 text-xs sm:text-sm shadow-xs ${
+                    isMe
+                      ? 'bg-brand-600 text-white rounded-br-xs'
+                      : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs'
+                  }`}
+                >
+                  <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>
+                </div>
+              )}
 
               <span className="text-[10px] text-slate-400 mt-1 px-1">
                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

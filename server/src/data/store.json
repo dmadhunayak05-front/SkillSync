@@ -1,0 +1,1303 @@
+{
+  "users": [
+    {
+      "uid": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "name": "Roshan Kumar Yadav",
+      "email": "roshanky2007@gmail.com",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLS6xr9442hxEtaeUqXK2tPMy8brsx_yfjeZr43bn9sO8zqIfqk=s96-c",
+      "college": "VBIT",
+      "course": "B.tech Computer Science",
+      "year": "2nd Year",
+      "bio": "Enthusiatic and extrovert",
+      "skillsToTeach": [
+        "DSA",
+        "JavaScript",
+        "Python",
+        "Figma",
+        "Design Systems"
+      ],
+      "skillsToLearn": [
+        "Public Speaking",
+        "Pitch Decks",
+        "Excel",
+        "Canva",
+        "Communication"
+      ],
+      "interests": [
+        "Business Strategy"
+      ],
+      "availability": [
+        "Monday 5 PM - 8 PM",
+        "Tuesday 5 PM - 8 PM",
+        "Sunday 2 PM - 5 PM",
+        "Saturday 10 AM - 1 PM"
+      ],
+      "credits": 120,
+      "rating": 5,
+      "reviewCount": 2,
+      "sessionsCompleted": 5,
+      "sessionsTaught": 1,
+      "sessionsLearned": 4,
+      "badges": [
+        "New Explorer"
+      ],
+      "createdAt": "2026-10-04T06:26:40.325Z",
+      "updatedAt": "2026-10-04T06:32:58.468Z"
+    },
+    {
+      "uid": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "name": "Bharath kumar Banda",
+      "email": "bharathkumarb2k36@gmail.com",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJFI8R0PxhFzituj599_cJof4Tj-hujWBM4_UcWjKWTFXuMx3E=s96-c",
+      "college": "VBIT",
+      "course": "B.tech Computer Science",
+      "year": "2nd Year",
+      "bio": "Enthusiatic and extrovert",
+      "skillsToTeach": [
+        "Python",
+        "Flask",
+        "Java",
+        "DSA",
+        "JavaScript"
+      ],
+      "skillsToLearn": [
+        "Public Speaking",
+        "Communication",
+        "Pitch Decks",
+        "Excel"
+      ],
+      "interests": [],
+      "availability": [
+        "Monday 5 PM - 8 PM",
+        "Tuesday 5 PM - 8 PM",
+        "Sunday 2 PM - 5 PM",
+        "Friday 4 PM - 8 PM",
+        "Thursday 5 PM - 8 PM",
+        "Saturday 10 AM - 1 PM"
+      ],
+      "credits": 145,
+      "rating": 4.5,
+      "reviewCount": 2,
+      "sessionsCompleted": 5,
+      "sessionsTaught": 4,
+      "sessionsLearned": 1,
+      "badges": [
+        "New Explorer"
+      ],
+      "createdAt": "2026-10-04T04:37:54.681Z",
+      "updatedAt": "2026-10-04T04:37:59.869Z"
+    },
+    {
+      "uid": "RgZax0cWsLVmmroi81JJkh7WU3D2",
+      "name": "Momentum",
+      "email": "momentum746@gmail.com",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocI0n_fImwUBCbZnfa2fVPV7-F0wo4TgYI0LkIpAZanbfuZp8Q=s96-c",
+      "college": "Malla Reddy",
+      "course": "B.Tech Computer Science",
+      "year": "4th Year",
+      "bio": "I love Teaching and helping others",
+      "skillsToTeach": [
+        "Python",
+        "Flask",
+        "Java",
+        "DSA"
+      ],
+      "skillsToLearn": [
+        "Communication",
+        "Pitch Decks",
+        "Excel",
+        "Photography",
+        "Public Speaking"
+      ],
+      "interests": [],
+      "availability": [
+        "Monday 5 PM - 8 PM",
+        "Tuesday 5 PM - 8 PM",
+        "Friday 4 PM - 8 PM",
+        "Thursday 5 PM - 8 PM",
+        "Sunday 2 PM - 5 PM",
+        "Saturday 10 AM - 1 PM"
+      ],
+      "credits": 50,
+      "rating": 5,
+      "reviewCount": 0,
+      "sessionsCompleted": 0,
+      "sessionsTaught": 0,
+      "sessionsLearned": 0,
+      "badges": [
+        "New Explorer"
+      ],
+      "createdAt": "2026-10-04T03:42:52.614Z",
+      "updatedAt": "2026-10-04T03:42:58.680Z"
+    },
+    {
+      "uid": "tUWIf1HCBefhVUsBbGyufu0dus63",
+      "name": "Madhu Nayak05",
+      "email": "dmadhunayak05@gmail.com",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJ7qGFDFxMVMzLy1lS7LHN8r5H8zgoOAjNJEgnOg2yeQn3h1b7Y=s96-c",
+      "college": "JNTU",
+      "course": "B.Tech CSM",
+      "year": "2nd Year",
+      "bio": "Aspiring ML engineer, NLP and Reinforcement Learning",
+      "skillsToTeach": [
+        "ML",
+        "Next.js",
+        "Design Systems",
+        "Git"
+      ],
+      "skillsToLearn": [
+        "Excel",
+        "Photography",
+        "Video Editing",
+        "Premiere Pro"
+      ],
+      "interests": [],
+      "availability": [
+        "Monday 5 PM - 8 PM",
+        "Tuesday 5 PM - 8 PM",
+        "Saturday 10 AM - 1 PM",
+        "Friday 4 PM - 8 PM",
+        "Thursday 5 PM - 8 PM",
+        "Sunday 2 PM - 5 PM"
+      ],
+      "credits": 50,
+      "rating": 5,
+      "reviewCount": 0,
+      "sessionsCompleted": 0,
+      "sessionsTaught": 0,
+      "sessionsLearned": 0,
+      "badges": [
+        "New Explorer"
+      ],
+      "createdAt": "2026-10-04T03:53:20.190Z",
+      "updatedAt": "2026-10-04T03:53:25.220Z"
+    }
+  ],
+  "connectionRequests": [
+    {
+      "id": "aa111516-5644-440b-8a7a-e2070759d45f",
+      "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "sender": {
+        "uid": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "name": "Roshan Kumar Yadav",
+        "email": "roshanky2007@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLS6xr9442hxEtaeUqXK2tPMy8brsx_yfjeZr43bn9sO8zqIfqk=s96-c",
+        "college": "",
+        "course": "",
+        "year": "1st Year",
+        "bio": "",
+        "skillsToTeach": [],
+        "skillsToLearn": [],
+        "interests": [],
+        "availability": [],
+        "credits": 60,
+        "rating": 5,
+        "reviewCount": 0,
+        "sessionsCompleted": 1,
+        "sessionsTaught": 0,
+        "sessionsLearned": 1,
+        "badges": [
+          "New Explorer"
+        ],
+        "createdAt": "2026-10-03T23:35:30.789Z",
+        "updatedAt": "2026-10-03T23:35:37.834Z"
+      },
+      "senderName": "Roshan Kumar Yadav",
+      "senderPhotoURL": "https://lh3.googleusercontent.com/a/ACg8ocLS6xr9442hxEtaeUqXK2tPMy8brsx_yfjeZr43bn9sO8zqIfqk=s96-c",
+      "senderCollege": "",
+      "receiverName": "Bharath kumar Banda",
+      "message": "Hey Bharath, would love to learn Python and help you with UI/UX!",
+      "skillOffered": "UI/UX",
+      "skillRequested": "Python",
+      "status": "accepted",
+      "createdAt": "2026-10-03T23:36:01.524Z"
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "userIds": [
+        "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "O9kJexAQ0rdQyb6x9G0o47xtbJR2"
+      ],
+      "user1": {
+        "uid": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "name": "Roshan Kumar Yadav",
+        "email": "roshanky2007@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLS6xr9442hxEtaeUqXK2tPMy8brsx_yfjeZr43bn9sO8zqIfqk=s96-c",
+        "college": "",
+        "course": "",
+        "year": "1st Year",
+        "bio": "",
+        "skillsToTeach": [],
+        "skillsToLearn": [],
+        "interests": [],
+        "availability": [],
+        "credits": 60,
+        "rating": 5,
+        "reviewCount": 0,
+        "sessionsCompleted": 1,
+        "sessionsTaught": 0,
+        "sessionsLearned": 1,
+        "badges": [
+          "New Explorer"
+        ],
+        "createdAt": "2026-10-03T23:35:30.789Z",
+        "updatedAt": "2026-10-03T23:35:37.834Z"
+      },
+      "user2": {
+        "uid": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "name": "Bharath kumar Banda",
+        "email": "bharathkumarb2k36@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocJFI8R0PxhFzituj599_cJof4Tj-hujWBM4_UcWjKWTFXuMx3E=s96-c",
+        "college": "VBIT",
+        "course": "B.tech Computer Science",
+        "year": "2nd Year",
+        "bio": "Enthusiatic and extrovert",
+        "skillsToTeach": [
+          "Python",
+          "Flask",
+          "Java",
+          "DSA",
+          "JavaScript"
+        ],
+        "skillsToLearn": [
+          "Public Speaking",
+          "Communication",
+          "Pitch Decks",
+          "Excel"
+        ],
+        "interests": [
+          "Business Strategy",
+          "Mobile Apps",
+          "Product Management",
+          "Competitive Programming"
+        ],
+        "availability": [
+          "Monday 5 PM - 8 PM",
+          "Tuesday 5 PM - 8 PM",
+          "Sunday 2 PM - 5 PM",
+          "Friday 4 PM - 8 PM",
+          "Thursday 5 PM - 8 PM",
+          "Saturday 10 AM - 1 PM"
+        ],
+        "credits": 70,
+        "rating": 5,
+        "reviewCount": 0,
+        "sessionsCompleted": 1,
+        "sessionsTaught": 1,
+        "sessionsLearned": 0,
+        "badges": [
+          "New Explorer"
+        ],
+        "createdAt": "2026-10-03T23:18:20.072Z",
+        "updatedAt": "2026-10-03T23:35:36.325Z"
+      },
+      "createdAt": "2026-10-03T23:36:01.567Z",
+      "lastMessage": "o klets shedule a meeting rn ",
+      "lastMessageAt": "2026-10-04T06:34:36.256Z"
+    }
+  ],
+  "messages": {
+    "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2": [
+      {
+        "id": "da93ac28-f53c-496d-b75b-8e216b4c4d6d",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Hey! I've accepted your request. Looking forward to exchanging skills. Let's schedule a session!",
+        "createdAt": "2026-10-03T23:36:01.567Z"
+      },
+      {
+        "id": "74205b6a-b969-44c8-ac84-80997bbea016",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "Hi Bharath! Excited to get started on Python.",
+        "createdAt": "2026-10-03T23:36:01.613Z"
+      },
+      {
+        "id": "27b959f4-d30e-41af-ba0e-d2d4bad45ab9",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Hi Roshan! Looking forward to it. Let schedule a session!",
+        "createdAt": "2026-10-03T23:36:01.629Z"
+      },
+      {
+        "id": "9e83e830-3f31-48a2-93c0-4559809f5796",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-03T23:40:06.884Z"
+      },
+      {
+        "id": "db3f3e6b-b1e8-4cdd-b024-aa9d8eb31863",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "yo",
+        "createdAt": "2026-10-03T23:40:14.187Z"
+      },
+      {
+        "id": "58bda4c9-f942-4c70-93c9-d7b33dae79a9",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-03T23:49:20.010Z"
+      },
+      {
+        "id": "session_created_session_1791071713247_e9yrg",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Fundamentals\nDate: Sunday, Oct 4\nTime: 5:00 PM\nDuration: 60 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/ckv-zihi-fae",
+        "type": "meeting",
+        "sessionId": "session_1791071713247_e9yrg",
+        "meetingUri": "https://meet.google.com/ckv-zihi-fae",
+        "meetSpaceName": "spaces/d8DF8r1qiKsB",
+        "createdAt": "2026-10-03T23:55:16.637Z"
+      },
+      {
+        "id": "944d2a26-be22-4983-a2cd-fabb67334be2",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-03T23:58:10.851Z"
+      },
+      {
+        "id": "0ff162b6-5462-49c1-bb46-dee5fd1d37e5",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "lets study",
+        "createdAt": "2026-10-03T23:58:14.789Z"
+      },
+      {
+        "id": "d59dbdbd-f47e-4ca7-a583-834af3f06df2",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "ok ",
+        "createdAt": "2026-10-03T23:58:20.665Z"
+      },
+      {
+        "id": "d4414edc-7fa1-49a3-8820-a29eb41e60e4",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "what do you wnna learn ",
+        "createdAt": "2026-10-03T23:58:25.550Z"
+      },
+      {
+        "id": "30777652-6652-4538-8ee8-80aef8893045",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hindi ",
+        "createdAt": "2026-10-03T23:58:31.237Z"
+      },
+      {
+        "id": "b91bc153-1c45-441f-96b1-b1b65be95f8f",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "o k join this meemt",
+        "createdAt": "2026-10-03T23:58:43.024Z"
+      },
+      {
+        "id": "session_created_session_1791071939108_eyf0b",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Flask\nDate: Sunday, Oct 4\nTime: 5:00 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/axc-sgqt-nin",
+        "type": "meeting",
+        "sessionId": "session_1791071939108_eyf0b",
+        "meetingUri": "https://meet.google.com/axc-sgqt-nin",
+        "meetSpaceName": "spaces/iEF0rtLB3MoB",
+        "createdAt": "2026-10-03T23:59:01.881Z"
+      },
+      {
+        "id": "09d08730-fa70-4550-b823-799ce48a1766",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T00:17:15.729Z"
+      },
+      {
+        "id": "7920b9de-867e-4026-9514-072fdcc405a8",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "helo",
+        "createdAt": "2026-10-04T00:17:23.021Z"
+      },
+      {
+        "id": "session_created_session_1791073524029_1ve7c",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Python\nDate: Monday, Oct 5\nTime: 5:00 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/fbg-jmxc-pbo",
+        "type": "meeting",
+        "sessionId": "session_1791073524029_1ve7c",
+        "meetingUri": "https://meet.google.com/fbg-jmxc-pbo",
+        "meetSpaceName": "spaces/0FxGjujg8WQB",
+        "createdAt": "2026-10-04T00:25:28.306Z"
+      },
+      {
+        "id": "def2b6fb-5dc1-48a3-b9f7-cf5bd29dc928",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "heloooo",
+        "createdAt": "2026-10-04T00:29:21.838Z"
+      },
+      {
+        "id": "16731f4f-c40c-46d4-8b28-f9878c7765a0",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T00:45:41.416Z"
+      },
+      {
+        "id": "adb64c73-2193-4465-a163-b7693eba7681",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hi",
+        "createdAt": "2026-10-04T00:46:23.546Z"
+      },
+      {
+        "id": "028dac79-7974-4991-b265-cf831f7d8668",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hii",
+        "createdAt": "2026-10-04T00:46:35.180Z"
+      },
+      {
+        "id": "2a81664a-326d-43e5-8fd8-3ffe2cb14113",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi bro can you teach me loops in pyhton",
+        "createdAt": "2026-10-04T03:44:32.484Z"
+      },
+      {
+        "id": "e3dad106-505c-4934-baa2-360752d0b491",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "ok lets schedule a meeting today at 5p,",
+        "createdAt": "2026-10-04T03:44:58.371Z"
+      },
+      {
+        "id": "session_created_session_1791085645511_alukv",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "receiverId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "Learning session scheduled!\n\nSkill: DSA\nDate: Monday, Oct 5\nTime: 5:00 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/zog-hocs-nht",
+        "type": "meeting",
+        "sessionId": "session_1791085645511_alukv",
+        "meetingUri": "https://meet.google.com/zog-hocs-nht",
+        "meetSpaceName": "spaces/nzhJfHLKRfMB",
+        "createdAt": "2026-10-04T03:47:28.692Z"
+      },
+      {
+        "id": "434dfa24-0ea2-452c-b80e-35eaeefbf621",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi  can u teach me flask?",
+        "createdAt": "2026-10-04T04:06:52.010Z"
+      },
+      {
+        "id": "405c5745-7efa-437f-9863-9a7585fe54a1",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "yeah lets go ",
+        "createdAt": "2026-10-04T04:07:05.864Z"
+      },
+      {
+        "id": "7c6fc502-f49b-4c43-a2b1-74da6877cabb",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hi",
+        "createdAt": "2026-10-04T04:10:31.108Z"
+      },
+      {
+        "id": "52fd290b-7177-45fd-824a-f76c4543dbd6",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hii",
+        "createdAt": "2026-10-04T04:11:38.389Z"
+      },
+      {
+        "id": "session_created_session_1791088276811_wadfv",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Python\nDate: Tuesday, Oct 6\nTime: 10:30 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/krf-qnav-jpb",
+        "type": "meeting",
+        "sessionId": "session_1791088276811_wadfv",
+        "meetingUri": "https://meet.google.com/krf-qnav-jpb",
+        "meetSpaceName": "spaces/5M-EVm2VJn8B",
+        "createdAt": "2026-10-04T04:31:30.408Z"
+      },
+      {
+        "id": "session_created_session_1791088469338_5aex4",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Python\nDate: Tuesday, Oct 6\nTime: 10:04 AM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/ryg-pqdp-txw",
+        "type": "meeting",
+        "sessionId": "session_1791088469338_5aex4",
+        "meetingUri": "https://meet.google.com/ryg-pqdp-txw",
+        "meetSpaceName": "spaces/2ElL0Dgzo-UB",
+        "createdAt": "2026-10-04T04:34:35.285Z"
+      },
+      {
+        "id": "session_created_session_1791088608929_jm1z9",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: React\nDate: Monday, Oct 5\nTime: 10:06 AM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/vie-wcyk-apr",
+        "type": "meeting",
+        "sessionId": "session_1791088608929_jm1z9",
+        "meetingUri": "https://meet.google.com/vie-wcyk-apr",
+        "meetSpaceName": "spaces/S7ODHR0GyegB",
+        "createdAt": "2026-10-04T04:36:52.309Z"
+      },
+      {
+        "id": "daa81331-51cf-45af-bac0-064928dc93df",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T04:38:25.735Z"
+      },
+      {
+        "id": "session_created_session_1791088709617_9sbha",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "receiverId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "Learning session scheduled!\n\nSkill: Python\nDate: Monday, Oct 5\nTime: 5:00 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/eww-udez-rku",
+        "type": "meeting",
+        "sessionId": "session_1791088709617_9sbha",
+        "meetingUri": "https://meet.google.com/eww-udez-rku",
+        "meetSpaceName": "spaces/UQpVi5apNF0B",
+        "createdAt": "2026-10-04T04:38:32.577Z"
+      },
+      {
+        "id": "session_created_session_1791089103041_dtywm",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "receiverId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "Learning session scheduled!\n\nSkill: DSA\nDate: Monday, Oct 5\nTime: 5:00 PM\nDuration: 45 minutes\n\nJoin Google Meet:\nhttps://meet.google.com/kta-dydm-kpn",
+        "type": "meeting",
+        "sessionId": "session_1791089103041_dtywm",
+        "meetingUri": "https://meet.google.com/kta-dydm-kpn",
+        "meetSpaceName": "spaces/RbVx8L7MoKgB",
+        "createdAt": "2026-10-04T04:45:07.065Z"
+      },
+      {
+        "id": "fb0f23fa-fb91-4e02-bc5f-85fc82f3eefc",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T04:54:24.019Z"
+      },
+      {
+        "id": "92bfc1d8-c409-4143-9bcb-f82c87717cee",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hello roshan",
+        "createdAt": "2026-10-04T04:54:31.286Z"
+      },
+      {
+        "id": "43890ff8-8879-4eca-b5aa-eb42fef1d22f",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T05:18:30.412Z"
+      },
+      {
+        "id": "c4e233d6-9e93-4dec-9177-f1a3030fadc2",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hlo",
+        "createdAt": "2026-10-04T05:18:37.284Z"
+      },
+      {
+        "id": "ed8a323b-a272-4350-8a1c-745659b7cf01",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "hi",
+        "createdAt": "2026-10-04T05:43:58.599Z"
+      },
+      {
+        "id": "eb9b0158-0939-4c6e-be0f-a511f963703f",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "text": "hi  can u teach me dsa",
+        "createdAt": "2026-10-04T06:34:19.282Z"
+      },
+      {
+        "id": "85880951-b268-4867-b7af-bad267d764fb",
+        "connectionId": "conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "senderId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "text": "o klets shedule a meeting rn ",
+        "createdAt": "2026-10-04T06:34:36.256Z"
+      }
+    ]
+  },
+  "sessions": [
+    {
+      "id": "e69d00f5-076a-4f02-9352-a3032a1f7ddd",
+      "title": "Python Fundamentals 1-on-1",
+      "skill": "Python",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-04T23:36:01.644Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "completed",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/yruk6vwj1SsB",
+        "meetingUri": "https://meet.google.com/qjt-merz-htc"
+      },
+      "meetingUri": "https://meet.google.com/qjt-merz-htc",
+      "meetingCode": "qjt-merz-htc",
+      "calendarLink": "",
+      "agenda": [
+        "Intro and learning goals for Python",
+        "Hands-on walkthrough and live practice",
+        "Q&A, next steps, and resource exchange"
+      ],
+      "createdAt": "2026-10-03T23:36:04.925Z",
+      "completedAt": "2026-10-03T23:36:21.596Z"
+    },
+    {
+      "id": "session_1791071713247_e9yrg",
+      "sessionId": "session_1791071713247_e9yrg",
+      "title": "Fundamentals Peer Learning Session",
+      "skill": "Fundamentals",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-04T17:00:00",
+      "duration": 60,
+      "durationMinutes": 60,
+      "status": "completed",
+      "meetingUri": "https://meet.google.com/ckv-zihi-fae",
+      "meetSpaceName": "spaces/d8DF8r1qiKsB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/d8DF8r1qiKsB",
+        "meetingUri": "https://meet.google.com/ckv-zihi-fae"
+      },
+      "meetingCode": "ckv-zihi-fae",
+      "calendarLink": "",
+      "agenda": [
+        "Intro and learning goals for Fundamentals",
+        "Hands-on walkthrough and live practice",
+        "Q&A, next steps, and resource exchange"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-03T23:55:16.315Z",
+      "updatedAt": "2026-10-03T23:55:16.315Z",
+      "completedAt": "2026-10-04T00:01:36.323Z"
+    },
+    {
+      "id": "session_1791071939108_eyf0b",
+      "sessionId": "session_1791071939108_eyf0b",
+      "title": "Code Review",
+      "skill": "Flask",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-04T11:30:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "completed",
+      "meetingUri": "https://meet.google.com/axc-sgqt-nin",
+      "meetSpaceName": "spaces/iEF0rtLB3MoB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/iEF0rtLB3MoB",
+        "meetingUri": "https://meet.google.com/axc-sgqt-nin"
+      },
+      "meetingCode": "axc-sgqt-nin",
+      "calendarLink": "",
+      "agenda": [
+        "Setup & foundational concepts of Flask",
+        "Interactive exercise & screen share review",
+        "Q&A, feedback, and mutual next steps"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-03T23:59:01.881Z",
+      "updatedAt": "2026-10-03T23:59:01.881Z",
+      "completedAt": "2026-10-04T00:01:17.478Z"
+    },
+    {
+      "id": "session_1791073524029_1ve7c",
+      "sessionId": "session_1791073524029_1ve7c",
+      "title": "Python Peer Learning Session",
+      "skill": "Python",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-05T11:30:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "completed",
+      "meetingUri": "https://meet.google.com/fbg-jmxc-pbo",
+      "meetSpaceName": "spaces/0FxGjujg8WQB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/0FxGjujg8WQB",
+        "meetingUri": "https://meet.google.com/fbg-jmxc-pbo"
+      },
+      "meetingCode": "fbg-jmxc-pbo",
+      "calendarLink": "",
+      "agenda": [
+        "Setup & foundational concepts of Python",
+        "Interactive exercise & screen share review",
+        "Q&A, feedback, and mutual next steps"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T00:25:28.051Z",
+      "updatedAt": "2026-10-04T00:25:28.051Z",
+      "completedAt": "2026-10-04T03:47:54.245Z"
+    },
+    {
+      "id": "session_1791085645511_alukv",
+      "sessionId": "session_1791085645511_alukv",
+      "title": "DSA Peer Learning Session",
+      "skill": "DSA",
+      "learnerId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "teacherId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "scheduledAt": "2026-10-05T11:30:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "completed",
+      "meetingUri": "https://meet.google.com/zog-hocs-nht",
+      "meetSpaceName": "spaces/nzhJfHLKRfMB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/nzhJfHLKRfMB",
+        "meetingUri": "https://meet.google.com/zog-hocs-nht"
+      },
+      "meetingCode": "zog-hocs-nht",
+      "calendarLink": "",
+      "agenda": [
+        "Setup & foundational concepts of DSA",
+        "Interactive exercise & screen share review",
+        "Q&A, feedback, and mutual next steps"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T03:47:28.684Z",
+      "updatedAt": "2026-10-04T03:47:28.684Z",
+      "completedAt": "2026-10-04T03:48:58.986Z"
+    },
+    {
+      "id": "session_1791088276811_wadfv",
+      "sessionId": "session_1791088276811_wadfv",
+      "title": "Python Mastery Live Session",
+      "skill": "Python",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-06T17:00:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "scheduled",
+      "meetingUri": "https://meet.google.com/krf-qnav-jpb",
+      "meetSpaceName": "spaces/5M-EVm2VJn8B",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/5M-EVm2VJn8B",
+        "meetingUri": "https://meet.google.com/krf-qnav-jpb"
+      },
+      "meetingCode": "krf-qnav-jpb",
+      "calendarLink": "",
+      "agenda": [
+        "Intro and learning goals for Python",
+        "Hands-on walkthrough and live practice",
+        "Q&A, next steps, and resource exchange"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T04:31:30.032Z",
+      "updatedAt": "2026-10-04T04:31:30.032Z"
+    },
+    {
+      "id": "session_1791088469338_5aex4",
+      "sessionId": "session_1791088469338_5aex4",
+      "title": "Python Advanced Architecture",
+      "skill": "Python",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-06T04:34:28.774Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "scheduled",
+      "meetingUri": "https://meet.google.com/ryg-pqdp-txw",
+      "meetSpaceName": "spaces/2ElL0Dgzo-UB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/2ElL0Dgzo-UB",
+        "meetingUri": "https://meet.google.com/ryg-pqdp-txw"
+      },
+      "meetingCode": "ryg-pqdp-txw",
+      "calendarLink": "",
+      "agenda": [
+        "Intro and learning goals for Python",
+        "Hands-on walkthrough and live practice",
+        "Q&A, next steps, and resource exchange"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T04:34:35.211Z",
+      "updatedAt": "2026-10-04T04:34:35.211Z"
+    },
+    {
+      "id": "session_1791088608929_jm1z9",
+      "sessionId": "session_1791088608929_jm1z9",
+      "title": "React Peer Learning Session",
+      "skill": "React",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-05T04:36:48.543Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "scheduled",
+      "meetingUri": "https://meet.google.com/vie-wcyk-apr",
+      "meetSpaceName": "spaces/S7ODHR0GyegB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/S7ODHR0GyegB",
+        "meetingUri": "https://meet.google.com/vie-wcyk-apr"
+      },
+      "meetingCode": "vie-wcyk-apr",
+      "calendarLink": "",
+      "agenda": [
+        "Intro and learning goals for React",
+        "Hands-on walkthrough and live practice",
+        "Q&A, next steps, and resource exchange"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T04:36:52.160Z",
+      "updatedAt": "2026-10-04T04:36:52.160Z"
+    },
+    {
+      "id": "session_1791088709617_9sbha",
+      "sessionId": "session_1791088709617_9sbha",
+      "title": "Python Peer Learning Session",
+      "skill": "Python",
+      "learnerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "teacherId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "scheduledAt": "2026-10-05T11:30:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "scheduled",
+      "meetingUri": "https://meet.google.com/eww-udez-rku",
+      "meetSpaceName": "spaces/UQpVi5apNF0B",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/UQpVi5apNF0B",
+        "meetingUri": "https://meet.google.com/eww-udez-rku"
+      },
+      "meetingCode": "eww-udez-rku",
+      "calendarLink": "",
+      "agenda": [
+        "Setup & foundational concepts of Python",
+        "Interactive exercise & screen share review",
+        "Q&A, feedback, and mutual next steps"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T04:38:32.575Z",
+      "updatedAt": "2026-10-04T04:38:32.575Z"
+    },
+    {
+      "id": "session_1791089103041_dtywm",
+      "sessionId": "session_1791089103041_dtywm",
+      "title": "DSA Peer Learning Session",
+      "skill": "DSA",
+      "learnerId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "teacherId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "scheduledAt": "2026-10-05T11:30:00.000Z",
+      "duration": 45,
+      "durationMinutes": 45,
+      "status": "scheduled",
+      "meetingUri": "https://meet.google.com/kta-dydm-kpn",
+      "meetSpaceName": "spaces/RbVx8L7MoKgB",
+      "meeting": {
+        "provider": "google_meet",
+        "spaceName": "spaces/RbVx8L7MoKgB",
+        "meetingUri": "https://meet.google.com/kta-dydm-kpn"
+      },
+      "meetingCode": "kta-dydm-kpn",
+      "calendarLink": "",
+      "agenda": [
+        "Setup & foundational concepts of DSA",
+        "Interactive exercise & screen share review",
+        "Q&A, feedback, and mutual next steps"
+      ],
+      "meetLinkMessageSent": true,
+      "createdAt": "2026-10-04T04:45:07.064Z",
+      "updatedAt": "2026-10-04T04:45:07.064Z"
+    }
+  ],
+  "feedback": [
+    {
+      "id": "5e5004c2-4bc9-4cf6-9c47-70aa3b80eeb6",
+      "sessionId": "e69d00f5-076a-4f02-9352-a3032a1f7ddd",
+      "reviewerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "rating": 5,
+      "comment": "Bharath was an amazing Python mentor! Helped me understand OOP and lists.",
+      "whatLearned": "",
+      "wouldLearnAgain": true,
+      "createdAt": "2026-10-03T23:36:21.629Z"
+    },
+    {
+      "id": "b819a995-b21f-4168-85e2-94a4e0b5cea4",
+      "sessionId": "session_1791071939108_eyf0b",
+      "reviewerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "revieweeId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "rating": 5,
+      "comment": "Great session! Very helpful explanations and clear guidance.",
+      "whatLearned": "Flask core patterns and best practices.",
+      "wouldLearnAgain": true,
+      "createdAt": "2026-10-04T00:01:21.389Z"
+    },
+    {
+      "id": "5e9df240-3785-49d1-a975-16605ea2d037",
+      "sessionId": "session_1791071713247_e9yrg",
+      "reviewerId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "revieweeId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "rating": 5,
+      "comment": "Great session! Very helpful explanations and clear guidance.",
+      "whatLearned": "Fundamentals core patterns and best practices.",
+      "wouldLearnAgain": true,
+      "createdAt": "2026-10-04T00:01:41.753Z"
+    },
+    {
+      "id": "e5916d38-6855-4c79-b8d0-b3d0035fec4f",
+      "sessionId": "session_1791073524029_1ve7c",
+      "reviewerId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "revieweeId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "rating": 4,
+      "comment": "ertw",
+      "whatLearned": "rtwer",
+      "wouldLearnAgain": true,
+      "createdAt": "2026-10-04T03:48:43.050Z"
+    },
+    {
+      "id": "ebe32032-0b73-45ce-8103-f017d0d85946",
+      "sessionId": "session_1791085645511_alukv",
+      "reviewerId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+      "revieweeId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+      "rating": 5,
+      "comment": "asdf",
+      "whatLearned": "DSA core patterns and best practices.",
+      "wouldLearnAgain": true,
+      "createdAt": "2026-10-04T03:49:05.292Z"
+    }
+  ],
+  "notifications": {
+    "O9kJexAQ0rdQyb6x9G0o47xtbJR2": [
+      {
+        "id": "8bcc4926-5d1a-4e27-9e39-566abaec950c",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T04:45:07.066Z",
+        "title": "Session Scheduled",
+        "message": "Your DSA session with Roshan Kumar Yadav is confirmed for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "3b7e715d-13ac-4e8f-87f6-b51d8f0113cd",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T04:38:32.580Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a Python session with you for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "2bfc1352-9b08-4380-9845-c8b49c71dc06",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T04:36:52.320Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a React session with you for 5 Oct 2026, 10:06 am. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "d1579334-e86a-440b-9eaa-c20d16855165",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T04:34:35.287Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a Python session with you for 6 Oct 2026, 10:04 am. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "54ededbc-f2d9-473c-882b-e5b44af1ca44",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T04:31:30.422Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a Python session with you for 6 Oct 2026, 10:30 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "23db2fea-8947-4323-a376-b6a8833de65d",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T03:48:58.986Z",
+        "title": "Session Completed!",
+        "message": "Your session with Roshan Kumar Yadav is completed. Leave feedback to award bonus credits!",
+        "type": "session_completed",
+        "link": "/sessions"
+      },
+      {
+        "id": "4bae06c1-6730-44df-8524-ffdcaf27efb1",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T03:48:43.051Z",
+        "title": "New Feedback Received",
+        "message": "Roshan Kumar Yadav left you a 4-star review: \"ertw\"",
+        "type": "feedback_received",
+        "link": "/profile/O9kJexAQ0rdQyb6x9G0o47xtbJR2"
+      },
+      {
+        "id": "5f87c81a-3694-451c-9c54-c1a23c14250f",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T03:47:28.693Z",
+        "title": "Session Scheduled",
+        "message": "Your DSA session with Roshan Kumar Yadav is confirmed for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "2003e1bb-e327-4cb3-887d-a03fe4e77c65",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T00:25:28.319Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a Python session with you for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "17fc0fa0-648b-49a1-ab81-451a25cc3076",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-04T00:01:21.389Z",
+        "title": "New Feedback Received",
+        "message": "Bharath kumar Banda left you a 5-star review: \"Great session! Very helpful explanations and clear guidance.\"",
+        "type": "feedback_received",
+        "link": "/profile/O9kJexAQ0rdQyb6x9G0o47xtbJR2"
+      },
+      {
+        "id": "50844d03-d530-44c9-b2b3-8c44d915da2a",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-03T23:59:01.882Z",
+        "title": "New Session Booked",
+        "message": "Bharath kumar Banda booked a Flask session with you for 4 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "45e33ebd-b862-4cca-b11f-d3395d39e7c4",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-03T23:55:16.649Z",
+        "title": "New Session Booked",
+        "message": "Bharath kumar Banda booked a Fundamentals session with you for 4 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "c6483ba0-5f02-470a-a769-6ecf0f6b207e",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-03T23:36:05.251Z",
+        "title": "New Session Booked",
+        "message": "Roshan Kumar Yadav booked a Python session with you for 5 Oct 2026, 5:06 am.",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "ebf60567-96a8-4f09-b5f4-abcd88b80319",
+        "userId": "O9kJexAQ0rdQyb6x9G0o47xtbJR2",
+        "read": false,
+        "createdAt": "2026-10-03T23:36:01.525Z",
+        "title": "New Learning Request",
+        "message": "Roshan Kumar Yadav wants to connect with you to learn Python!",
+        "type": "connection_request",
+        "link": "/connections"
+      }
+    ],
+    "QLgWHWdZGndDlNloSZhZvXpyMNl1": [
+      {
+        "id": "d131515e-5d47-4335-a47c-e8b7a04ca489",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T04:45:07.066Z",
+        "title": "New Session Booked",
+        "message": "Bharath kumar Banda booked a DSA session with you for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "977cdfdd-7977-42d8-8589-db8e84ca9f19",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T04:38:32.579Z",
+        "title": "Session Scheduled",
+        "message": "Your Python session with Bharath kumar Banda is confirmed for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "b955e291-db45-4f44-bb83-fc9de3fc89a7",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T04:36:52.319Z",
+        "title": "Session Scheduled",
+        "message": "Your React session with Bharath kumar Banda is confirmed for 5 Oct 2026, 10:06 am. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "472265cc-19e8-4f07-8c7b-0973107b33f9",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T04:34:35.286Z",
+        "title": "Session Scheduled",
+        "message": "Your Python session with Bharath kumar Banda is confirmed for 6 Oct 2026, 10:04 am. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "37816cc3-d3eb-4a30-891c-8465afe06bde",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T04:31:30.421Z",
+        "title": "Session Scheduled",
+        "message": "Your Python session with Bharath kumar Banda is confirmed for 6 Oct 2026, 10:30 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "8f42a108-8fea-40e9-8b21-6066921ddee7",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T03:49:05.292Z",
+        "title": "New Feedback Received",
+        "message": "Bharath kumar Banda left you a 5-star review: \"asdf\"",
+        "type": "feedback_received",
+        "link": "/profile/QLgWHWdZGndDlNloSZhZvXpyMNl1"
+      },
+      {
+        "id": "bcc8ef56-20fa-4bb2-8496-40b3c6e5c41f",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T03:47:54.245Z",
+        "title": "Session Completed!",
+        "message": "Your session with Bharath kumar Banda is completed. Leave feedback to award bonus credits!",
+        "type": "session_completed",
+        "link": "/sessions"
+      },
+      {
+        "id": "8009c322-b01b-4f6f-8288-5b9cd33e2ae0",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T03:47:28.693Z",
+        "title": "New Session Booked",
+        "message": "Bharath kumar Banda booked a DSA session with you for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "c7b4634c-889c-4efc-b491-16bd458ed4a5",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T00:25:28.318Z",
+        "title": "Session Scheduled",
+        "message": "Your Python session with Bharath kumar Banda is confirmed for 5 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "d63a655d-3f80-4770-969a-cc4b6bc1a003",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T00:01:41.754Z",
+        "title": "New Feedback Received",
+        "message": "Bharath kumar Banda left you a 5-star review: \"Great session! Very helpful explanations and clear guidance.\"",
+        "type": "feedback_received",
+        "link": "/profile/QLgWHWdZGndDlNloSZhZvXpyMNl1"
+      },
+      {
+        "id": "7ec5d221-ba5d-4347-9ec0-6bfcc7bff033",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T00:01:36.323Z",
+        "title": "Session Completed!",
+        "message": "Your session with Bharath kumar Banda is completed. Leave feedback to award bonus credits!",
+        "type": "session_completed",
+        "link": "/sessions"
+      },
+      {
+        "id": "e236f2a0-7cd0-4647-bda0-22831f0e279d",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-04T00:01:17.478Z",
+        "title": "Session Completed!",
+        "message": "Your session with Bharath kumar Banda is completed. Leave feedback to award bonus credits!",
+        "type": "session_completed",
+        "link": "/sessions"
+      },
+      {
+        "id": "f7a5db29-4cba-4dab-8b61-201ebaeb0c48",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-03T23:59:01.881Z",
+        "title": "Session Scheduled",
+        "message": "Your Flask session with Bharath kumar Banda is confirmed for 4 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "5113529a-0a27-4f87-b87c-df9a00ab8cd9",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-03T23:55:16.648Z",
+        "title": "Session Scheduled",
+        "message": "Your Fundamentals session with Bharath kumar Banda is confirmed for 4 Oct 2026, 5:00 pm. Google Meet is ready!",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "c48f9ee4-deb4-4fae-9ce3-10c85e081fde",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-03T23:36:21.596Z",
+        "title": "Session Completed!",
+        "message": "Your session with Bharath kumar Banda is completed. Leave feedback to award bonus credits!",
+        "type": "session_completed",
+        "link": "/sessions"
+      },
+      {
+        "id": "a38c896e-5bf9-4716-8a2a-9a7e8c919bdc",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-03T23:36:05.251Z",
+        "title": "Session Scheduled",
+        "message": "Your Python session with Bharath kumar Banda is confirmed for 5 Oct 2026, 5:06 am.",
+        "type": "session_scheduled",
+        "link": "/sessions"
+      },
+      {
+        "id": "dcd604cd-0230-46e7-9359-42590604e55e",
+        "userId": "QLgWHWdZGndDlNloSZhZvXpyMNl1",
+        "read": false,
+        "createdAt": "2026-10-03T23:36:01.567Z",
+        "title": "Connection Accepted",
+        "message": "Bharath kumar Banda accepted your learning request!",
+        "type": "connection_accepted",
+        "link": "/chat/conn_QLgWHWdZGndDlNloSZhZvXpyMNl1_O9kJexAQ0rdQyb6x9G0o47xtbJR2"
+      }
+    ]
+  }
+}

@@ -4,6 +4,7 @@ import { SyncProvider } from './context/SyncContext';
 import Navbar from './components/common/Navbar';
 import Sidebar from './components/common/Sidebar';
 import AuthModal from './components/common/AuthModal';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -17,10 +18,10 @@ import OnboardingPage from './pages/OnboardingPage';
 import MyProfilePage from './pages/MyProfilePage';
 
 // Mobile bottom navigation icons
-import { LayoutDashboard, Compass, Users, MessageSquare, Calendar, UserCheck } from 'lucide-react';
+import { LayoutDashboard, Compass, Users, MessageSquare, Calendar, UserCheck, Sparkles } from 'lucide-react';
 
 function AppContent() {
-  const { currentUser, loading } = useAuth();
+  const { user, profile, currentUser, loading } = useAuth();
 
   // Navigation router state
   const [currentTab, setCurrentTab] = useState(() => {
@@ -30,6 +31,20 @@ function AppContent() {
   const [navParams, setNavParams] = useState({});
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login');
+
+  // [AUTH DEBUG] Logging required by Section 10
+  useEffect(() => {
+    if (currentUser || user) {
+      console.log('=== [AUTH DEBUG] ===');
+      console.log('route:', `/${currentTab}`);
+      console.log('authUid:', user?.uid || currentUser?.uid);
+      console.log('authEmail:', user?.email || currentUser?.email);
+      console.log('profileUid:', profile?.uid || currentUser?.uid);
+      console.log('profileEmail:', profile?.email || currentUser?.email);
+      console.log('name:', profile?.name || currentUser?.name);
+      console.log('====================');
+    }
+  }, [currentTab, currentUser?.uid, user?.uid, profile?.uid]);
 
   const openAuth = (mode = 'login') => {
     setAuthModalMode(mode);
@@ -60,6 +75,18 @@ function AppContent() {
       setCurrentTab('landing');
     }
   }, [currentUser, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white p-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/30 mb-4 animate-pulse">
+          <Sparkles className="w-7 h-7 text-white" />
+        </div>
+        <h2 className="text-lg font-black tracking-tight text-white mb-1">SkillSync</h2>
+        <p className="text-xs text-slate-400 font-medium">Checking authentication...</p>
+      </div>
+    );
+  }
 
   const isLanding = currentTab === 'landing';
 
@@ -97,11 +124,16 @@ function AppContent() {
               {currentTab === 'connections' && (
                 <ConnectionsPage onNavigate={handleNavigate} />
               )}
-              {currentTab === 'chat' && (
+              {(currentTab === 'chat' || currentTab === 'messages') && (
                 <ChatPage connectionId={navParams.connectionId} onNavigate={handleNavigate} />
               )}
-              {currentTab === 'sessions' && (
-                <SessionsPage initialSessionId={navParams.sessionId} onNavigate={handleNavigate} />
+              {(currentTab === 'sessions' || currentTab === 'live-sessions') && (
+                <ErrorBoundary 
+                  onNavigate={handleNavigate} 
+                  fallbackTitle="Something went wrong while loading Live Sessions."
+                >
+                  <SessionsPage initialSessionId={navParams.sessionId} onNavigate={handleNavigate} />
+                </ErrorBoundary>
               )}
               {currentTab === 'onboarding' && (
                 <OnboardingPage onNavigate={handleNavigate} />

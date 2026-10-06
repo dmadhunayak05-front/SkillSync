@@ -237,6 +237,15 @@ export async function handleOAuthCallback(code, userId = null) {
  * - Returns the exact meetingUri returned by Google.
  * - Returns structured meeting object: { provider: 'google_meet', spaceName, meetingUri }.
  */
+function withTimeout(promise, ms, operationName) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${operationName} timed out after ${ms}ms`)), ms)
+    )
+  ]);
+}
+
 export async function createGoogleMeetSession({
   title = 'SkillSync Learning Session',
   description = 'Peer-to-peer skill exchange on SkillSync',
@@ -259,6 +268,7 @@ export async function createGoogleMeetSession({
     throw error;
   }
 
+  console.log('[SCHEDULE] obtaining Google OAuth token');
   const oauth2Client = getOAuth2Client(userId);
   if (!oauth2Client) {
     const error = new Error('Google Meet access is required to create a live session.');
@@ -272,14 +282,19 @@ export async function createGoogleMeetSession({
 
   // Approach 1: Google Meet REST API v2 (spaces.create)
   try {
+    console.log('[SCHEDULE] creating Google Meet space (spaces.create)');
     const meet = google.meet({ version: 'v2', auth: oauth2Client });
-    const spaceRes = await meet.spaces.create({
-      requestBody: {
-        config: {
-          accessType: 'OPEN'
+    const spaceRes = await withTimeout(
+      meet.spaces.create({
+        requestBody: {
+          config: {
+            accessType: 'OPEN'
+          }
         }
-      }
-    });
+      }),
+      10000,
+      'Google Meet spaces.create'
+    );
 
     if (spaceRes.data && spaceRes.data.meetingUri) {
       createdMeeting = {
@@ -289,6 +304,7 @@ export async function createGoogleMeetSession({
         meetingCode: spaceRes.data.meetingCode || spaceRes.data.meetingUri.replace('https://meet.google.com/', ''),
         apiMode: 'google_meet_v2_spaces'
       };
+      console.log(`[SCHEDULE] Meet created: ${createdMeeting.meetingUri}`);
     }
   } catch (meetApiErr) {
     console.warn('[MeetService] Google Meet API v2 spaces.create failed, trying Google Calendar API fallback:', meetApiErr.message);
@@ -299,6 +315,7 @@ export async function createGoogleMeetSession({
   // Highly reliable across both Personal (@gmail.com) and Google Workspace accounts
   if (!createdMeeting) {
     try {
+      console.log('[SCHEDULE] creating Google Meet space (calendar fallback)');
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
       
       const startIso = scheduledAt ? new Date(scheduledAt).toISOString() : new Date().toISOString();
@@ -322,11 +339,15 @@ export async function createGoogleMeetSession({
         }
       };
 
-      const eventRes = await calendar.events.insert({
-        calendarId: 'primary',
-        conferenceDataVersion: 1,
-        requestBody: calendarEvent,
-      });
+      const eventRes = await withTimeout(
+        calendar.events.insert({
+          calendarId: 'primary',
+          conferenceDataVersion: 1,
+          requestBody: calendarEvent,
+        }),
+        10000,
+        'Google Calendar events.insert'
+      );
 
       const meetingUri = eventRes.data.conferenceData?.entryPoints?.find(
         (ep) => ep.entryPointType === 'video'
@@ -342,6 +363,7 @@ export async function createGoogleMeetSession({
           calendarHtmlLink: eventRes.data.htmlLink,
           apiMode: 'google_calendar_hangouts_meet'
         };
+        console.log(`[SCHEDULE] Meet created: ${createdMeeting.meetingUri}`);
       }
     } catch (calApiErr) {
       console.warn('[MeetService] Google Calendar conference creation failed:', calApiErr.message);

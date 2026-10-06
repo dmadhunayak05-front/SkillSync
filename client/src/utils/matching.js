@@ -66,15 +66,26 @@ export function calculateMatch(currentUser, peerUser) {
     availScore = 0.75;
   }
 
-  const weighted = (directScore * 40) + (reciprocalScore * 25) + (interestScore * 20) + (availScore * 15);
-  let score = Math.round(weighted);
+  // Real deterministic scoring based on actual skills and interests
+  const hasDirectMatch = directSkills.length > 0;
+  const hasReciprocalMatch = reciprocalSkills.length > 0;
+  const hasInterestMatch = sharedInterests.length > 0;
 
-  if (directSkills.length > 0 && reciprocalSkills.length > 0) {
-    score = Math.max(92, Math.min(98, score + 12));
-  } else if (directSkills.length > 0) {
-    score = Math.max(74, Math.min(89, score + 10));
+  let score = 50;
+  if (hasDirectMatch || hasReciprocalMatch || hasInterestMatch) {
+    const raw = (directScore * 55) + (reciprocalScore * 30) + (interestScore * 15);
+    score = Math.round(raw);
+    if (hasDirectMatch && hasReciprocalMatch) {
+      score = Math.min(98, Math.max(88, score + 15));
+    } else if (hasDirectMatch) {
+      score = Math.min(90, Math.max(65, score));
+    } else if (hasReciprocalMatch) {
+      score = Math.min(80, Math.max(55, score));
+    } else {
+      score = Math.min(60, Math.max(50, score));
+    }
   } else {
-    score = Math.max(48, Math.min(68, score));
+    score = 50;
   }
 
   const reasons = [];

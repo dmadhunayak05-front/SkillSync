@@ -21,7 +21,7 @@ import {
 
 export default function DashboardPage({ onNavigate }) {
   const { currentUser, allUsers } = useAuth();
-  const { sessions, connections, requests } = useSync();
+  const { sessions, connections, requests, notifications = [] } = useSync();
 
   const [selectedStudentForConnect, setSelectedStudentForConnect] = useState(null);
 
@@ -45,6 +45,35 @@ export default function DashboardPage({ onNavigate }) {
 
   // User's active connections
   const userConnections = connections.filter(c => c.userIds?.includes(currentUser?.uid));
+
+  // Compute real activity timeline
+  const userNotifications = notifications.filter(n => n.userId === currentUser?.uid);
+  const realActivities = [
+    ...userNotifications.map(n => ({
+      id: `notif-${n.id}`,
+      icon: n.type === 'connection_accepted' ? CheckCircle2 : n.type === 'session_scheduled' ? Calendar : Clock,
+      color: n.type === 'connection_accepted' ? 'emerald' : n.type === 'session_scheduled' ? 'brand' : 'indigo',
+      title: n.title,
+      description: n.message,
+      time: n.createdAt ? new Date(n.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Recently'
+    })),
+    ...userSessions.map(s => ({
+      id: `session-${s.id}`,
+      icon: Calendar,
+      color: 'brand',
+      title: 'Session Scheduled',
+      description: `${s.skill} session scheduled with ${s.teacherId === currentUser?.uid ? 'student' : 'mentor'}.`,
+      time: s.createdAt ? new Date(s.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Scheduled'
+    })),
+    ...userConnections.map(c => ({
+      id: `conn-${c.id}`,
+      icon: Users,
+      color: 'emerald',
+      title: 'Peer Connected',
+      description: 'You connected with a new study partner.',
+      time: c.createdAt ? new Date(c.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Active'
+    }))
+  ].slice(0, 4);
 
   return (
     <div className="space-y-8 pb-12">
@@ -232,40 +261,39 @@ export default function DashboardPage({ onNavigate }) {
         {/* Right Col: Recent Activity Timeline */}
         <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
           <h3 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">Recent Activity</h3>
-          <div className="space-y-3.5 text-xs">
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="font-semibold text-slate-800">Learning request accepted</p>
-                <p className="text-slate-500 text-[11px]">Rahul Sharma accepted your Python request.</p>
-                <span className="text-[10px] text-slate-400">1 hour ago</span>
-              </div>
+          {realActivities.length === 0 ? (
+            <div className="py-8 text-center space-y-2">
+              <Clock className="w-8 h-8 text-slate-300 mx-auto" />
+              <p className="text-xs font-bold text-slate-700">No recent activity yet</p>
+              <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                Connect with peers and schedule learning sessions to track your collaborative milestones here.
+              </p>
             </div>
+          ) : (
+            <div className="space-y-3.5 text-xs">
+              {realActivities.map((act) => {
+                const Icon = act.icon;
+                const colorClasses = act.color === 'emerald'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : act.color === 'brand'
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'bg-indigo-100 text-indigo-700';
 
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Calendar className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="font-semibold text-slate-800">Session Scheduled</p>
-                <p className="text-slate-500 text-[11px]">Python Fundamentals for tomorrow at 5:00 PM.</p>
-                <span className="text-[10px] text-slate-400">2 hours ago</span>
-              </div>
+                return (
+                  <div key={act.id} className="flex items-start gap-3">
+                    <div className={`w-7 h-7 rounded-full ${colorClasses} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-800">{act.title}</p>
+                      <p className="text-slate-500 text-[11px]">{act.description}</p>
+                      <span className="text-[10px] text-slate-400">{act.time}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-              </div>
-              <div>
-                <p className="font-semibold text-slate-800">5-Star Feedback Received</p>
-                <p className="text-slate-500 text-[11px]">"Exceptional guidance on Figma UI components!"</p>
-                <span className="text-[10px] text-slate-400">Yesterday • +5 Credits</span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
       </div>

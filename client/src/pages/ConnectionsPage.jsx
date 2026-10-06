@@ -27,19 +27,17 @@ export default function ConnectionsPage({ onNavigate }) {
   // Filter user's active connections
   const userConnections = connections.filter(c => c.userIds && c.userIds.includes(currentUser?.uid));
 
-  // Development Logging according to Part 2
+  // [CONNECTIONS DEBUG] Logging required by Section 10
   React.useEffect(() => {
     if (!currentUser?.uid) return;
-    console.log('=== [DEV LOG: CONNECTIONS PAGE AUDIT] ===');
-    console.log('Current authenticated UID:', currentUser.uid);
-    console.log('Received request query:', 'where("receiverId", "==", currentUser.uid), where("status", "==", "pending")');
-    console.log('Query receiverId:', currentUser.uid);
+    console.log('=== [CONNECTIONS DEBUG] ===');
+    console.log('authUid:', currentUser.uid);
+    console.log('authEmail:', currentUser.email);
+    console.log('name:', currentUser.name);
     console.log('Number of received requests:', receivedRequests.length);
-    receivedRequests.forEach((req, idx) => {
-      console.log(`[Received Request #${idx + 1}] Document ID: ${req.id} | senderId: ${req.senderId} | receiverId: ${req.receiverId} | status: ${req.status}`);
-    });
-    console.log('==========================================');
-  }, [currentUser?.uid, receivedRequests.length]);
+    console.log('Number of active connections:', userConnections.length);
+    console.log('===========================');
+  }, [currentUser?.uid, currentUser?.email, currentUser?.name, receivedRequests.length, userConnections.length]);
 
   const handleAccept = async (requestId) => {
     await respondToConnectionRequest(requestId, 'accepted');

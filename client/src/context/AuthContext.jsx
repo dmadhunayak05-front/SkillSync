@@ -1,64 +1,106 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { DEMO_USERS } from '../data/mockData';
 import { 
   auth, 
   isFirebaseConfigured, 
   loginWithGoogleFirebase, 
   loginWithEmailFirebase,
   registerWithEmailFirebase,
+  sendPasswordResetFirebase,
   logoutFirebase,
   getFirestoreUser,
   setFirestoreUser,
-  getFirestoreAllUsers,
-  seedFirestoreProfilesIfEmpty
+  getFirestoreAllUsers
 } from '../services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { api } from '../services/api';
 
 const AuthContext = createContext(null);
 
-// Tab/Window-isolated session storage key so Tab 1 and Tab 2 can be two different users
-const SESSION_AUTH_KEY = 'skillsync_session_user';
-const GLOBAL_USERS_KEY = 'skillsync_global_student_directory';
-
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [allUsers, setAllUsers] = useState(() => {
-    const saved = localStorage.getItem(GLOBAL_USERS_KEY);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return DEMO_USERS;
-  });
+  // Single Source of Authenticated Truth
+  const [user, setUser] = useState(null);               // Firebase Auth User (fbUser)
+  const [profile, setProfile] = useState(null);         // Firestore profile users/{uid}
+  const [currentUser, setCurrentUser] = useState(null); // Direct alias to profile for backward compatibility
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const isFirebaseLive = isFirebaseConfigured();
 
-  // Save global student directory
+  // Development Assertion (Section 9): Verify Authenticated Identity Integrity
   useEffect(() => {
-    localStorage.setItem(GLOBAL_USERS_KEY, JSON.stringify(allUsers));
-  }, [allUsers]);
+    if (user && profile) {
+      if (profile.uid !== user.uid) {
+        console.error('AUTH IDENTITY MISMATCH', {
+          authUid: user.uid,
+          profileUid: profile.uid,
+          authEmail: user.email,
+          profileEmail: profile.email
+        });
+      }
+    }
+  }, [user, profile]);
 
-  // Initial Auth Check: Listen to Firebase Auth or restore isolated window session
+  // Load all other discoverable students from Firestore AND Backend API (Deduplicated by UID)
+  const loadAllUsers = async (myUid) => {
+    if (!myUid) return [];
+    try {
+      let remoteUsers = [];
+      try {
+        remoteUsers = await getFirestoreAllUsers(myUid);
+      } catch (e) {}
+
+      let apiUsers = [];
+      try {
+        apiUsers = await api.getUsers();
+      } catch (e) {}
+
+      const userMap = new Map();
+      (remoteUsers || []).forEach(u => {
+        if (u && u.uid && u.uid !== myUid && !u.uid.startsWith('user_') && !u.isDemo) {
+          userMap.set(u.uid, u);
+        }
+      });
+      (apiUsers || []).forEach(u => {
+        if (u && u.uid && u.uid !== myUid && !u.uid.startsWith('user_') && !u.isDemo) {
+          const existing = userMap.get(u.uid);
+          userMap.set(u.uid, { ...existing, ...u });
+        }
+      });
+
+      const merged = Array.from(userMap.values());
+      setAllUsers(merged);
+      return merged;
+    } catch (err) {
+      console.warn('[AuthContext] loadAllUsers error:', err);
+      return [];
+    }
+  };
+
+  // Primary Authentication Listener: Firebase Auth is the Single Source of Truth
   useEffect(() => {
     let unsubscribe = () => {};
 
     if (isFirebaseLive && auth) {
-      // Seed Firestore with discoverable demo students if first time
-      seedFirestoreProfilesIfEmpty(DEMO_USERS);
+      // Safety timer: NEVER allow loading screen to hang more than 2.5 seconds
+      const safetyTimer = setTimeout(() => {
+        setLoading(false);
+      }, 2500);
 
-      unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-        if (fbUser) {
-          // Fetch or initialize user document from Firestore users/{uid}
-          let userProfile = await getFirestoreUser(fbUser.uid);
-          if (!userProfile) {
-            userProfile = {
+      unsubscribe = onAuthStateChanged(
+        auth,
+        async (fbUser) => {
+          clearTimeout(safetyTimer);
+          if (fbUser) {
+            setUser(fbUser);
+
+            // 1. Immediately create safe default profile guaranteed to match the authenticated identity
+            const defaultUser = {
               uid: fbUser.uid,
               name: fbUser.displayName || 'Student',
               email: fbUser.email,
               photoURL: fbUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${fbUser.uid}`,
               college: '',
               course: '',
-              year: '2nd Year',
+              year: '1st Year',
               bio: '',
               skillsToTeach: [],
               skillsToLearn: [],
@@ -71,191 +113,223 @@ export function AuthProvider({ children }) {
               sessionsTaught: 0,
               sessionsLearned: 0,
               badges: ['New Explorer'],
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
             };
-            await setFirestoreUser(fbUser.uid, userProfile);
-          }
-          setCurrentUser(userProfile);
-          sessionStorage.setItem(SESSION_AUTH_KEY, JSON.stringify(userProfile));
 
-          // Fetch other users for discovery
-          const remoteUsers = await getFirestoreAllUsers(fbUser.uid);
-          if (remoteUsers.length > 0) {
-            setAllUsers(prev => {
-              const map = new Map(prev.map(u => [u.uid, u]));
-              remoteUsers.forEach(u => map.set(u.uid, u));
-              return Array.from(map.values());
-            });
+            setProfile(defaultUser);
+            setCurrentUser(defaultUser);
+            setLoading(false); // Unblock UI immediately with genuine identity
+
+            // 2. Load Firestore users/{uid} & backend store without EVER corrupting identity
+            try {
+              let userProfile = await getFirestoreUser(fbUser.uid);
+
+              if (userProfile) {
+                // Identity Protection: If Firestore profile had a corrupted email/identity from a past bug, fix it!
+                if (userProfile.email && fbUser.email && userProfile.email.toLowerCase() !== fbUser.email.toLowerCase()) {
+                  console.warn('[AuthContext] Correcting corrupted Firestore profile email:', userProfile.email, '->', fbUser.email);
+                  userProfile = {
+                    ...defaultUser,
+                    college: userProfile.college || '',
+                    course: userProfile.course || '',
+                    skillsToTeach: userProfile.skillsToTeach || [],
+                    skillsToLearn: userProfile.skillsToLearn || []
+                  };
+                }
+              } else {
+                userProfile = defaultUser;
+                await setFirestoreUser(fbUser.uid, userProfile).catch(() => {});
+              }
+
+              // Fetch supplementary metadata from backend
+              try {
+                const backendUser = await api.getUser(fbUser.uid);
+                if (backendUser) {
+                  // Never overwrite cryptographic name/email from an external or mismatched source
+                  const isMatchingIdentity = !backendUser.email || (fbUser.email && backendUser.email.toLowerCase() === fbUser.email.toLowerCase());
+                  userProfile = {
+                    ...userProfile,
+                    college: backendUser.college || userProfile.college,
+                    course: backendUser.course || userProfile.course,
+                    year: backendUser.year || userProfile.year,
+                    bio: backendUser.bio || userProfile.bio,
+                    skillsToTeach: backendUser.skillsToTeach?.length ? backendUser.skillsToTeach : userProfile.skillsToTeach,
+                    skillsToLearn: backendUser.skillsToLearn?.length ? backendUser.skillsToLearn : userProfile.skillsToLearn,
+                    availability: backendUser.availability?.length ? backendUser.availability : userProfile.availability,
+                    credits: backendUser.credits ?? userProfile.credits,
+                    rating: backendUser.rating ?? userProfile.rating,
+                    reviewCount: backendUser.reviewCount ?? userProfile.reviewCount,
+                    sessionsCompleted: backendUser.sessionsCompleted ?? userProfile.sessionsCompleted,
+                    sessionsTaught: backendUser.sessionsTaught ?? userProfile.sessionsTaught,
+                    sessionsLearned: backendUser.sessionsLearned ?? userProfile.sessionsLearned,
+                    badges: backendUser.badges?.length ? backendUser.badges : userProfile.badges
+                  };
+                  if (isMatchingIdentity && backendUser.name && !fbUser.displayName) {
+                    userProfile.name = backendUser.name;
+                  }
+                }
+              } catch (beErr) {}
+
+              // Strict Guarantee: Authenticated identity ALWAYS takes precedence
+              userProfile.uid = fbUser.uid;
+              userProfile.email = fbUser.email;
+              if (fbUser.displayName) {
+                userProfile.name = fbUser.displayName;
+              }
+              if (fbUser.photoURL) {
+                userProfile.photoURL = fbUser.photoURL;
+              }
+
+              setProfile(userProfile);
+              setCurrentUser(userProfile);
+
+              // Sync cleaned profile back to Firestore & backend
+              setFirestoreUser(fbUser.uid, userProfile).catch(() => {});
+              api.syncUser(userProfile).catch(() => {});
+
+              // Load all other discoverable students
+              await loadAllUsers(fbUser.uid);
+            } catch (profileErr) {
+              console.warn('[AuthContext] profile sync warning:', profileErr.message);
+              await loadAllUsers(fbUser.uid);
+            }
+          } else {
+            setUser(null);
+            setProfile(null);
+            setCurrentUser(null);
+            setAllUsers([]);
+            setLoading(false);
           }
-        } else {
+        },
+        (authErr) => {
+          clearTimeout(safetyTimer);
+          console.warn('[AuthContext] onAuthStateChanged error:', authErr);
+          setUser(null);
+          setProfile(null);
           setCurrentUser(null);
-          sessionStorage.removeItem(SESSION_AUTH_KEY);
+          setLoading(false);
         }
-        setLoading(false);
-      });
+      );
     } else {
-      // Isolated session restoration (e.g. Tab 1 is Manideep, Tab 2 is Rahul)
-      const sessionUserStr = sessionStorage.getItem(SESSION_AUTH_KEY);
-      if (sessionUserStr) {
-        try {
-          const parsed = JSON.parse(sessionUserStr);
-          setCurrentUser(parsed);
-        } catch (e) {
-          setCurrentUser(null);
-        }
-      } else {
-        setCurrentUser(null);
-      }
+      console.warn('[SkillSync Auth] Firebase credentials missing or not configured in client/.env');
+      setUser(null);
+      setProfile(null);
+      setCurrentUser(null);
+      setAllUsers([]);
       setLoading(false);
     }
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, [isFirebaseLive]);
 
-  // 1. Google Sign-In
+  // Periodic poll to keep all registered users synchronized across active browser sessions
+  useEffect(() => {
+    if (!user?.uid) return;
+    const interval = setInterval(() => {
+      loadAllUsers(user.uid);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [user?.uid]);
+
+  // 1. Google Sign-In (Official Firebase GoogleAuthProvider)
   const loginWithGoogle = async () => {
+    if (!isFirebaseLive || !auth) {
+      throw new Error('Firebase Authentication is not configured. Please paste your Firebase web credentials into client/.env.');
+    }
     setLoading(true);
     try {
-      if (isFirebaseLive) {
-        const fbUser = await loginWithGoogleFirebase();
-        return fbUser;
-        throw new Error('Google Sign-In requires Firebase configuration in client/.env. Please configure Firebase API keys or use Email Sign-In.');
-      }
-    } catch (err) {
-      console.error('Google login error:', err);
-      throw err;
+      const fbUser = await loginWithGoogleFirebase();
+      return fbUser;
     } finally {
       setLoading(false);
     }
   };
 
-  // 2. Email & Password Sign-In (Allows testing multiple users simultaneously in separate windows!)
-  const loginWithEmail = async (email, password, displayName = null) => {
+  // 2. Email & Password Sign-In (Validates against Firebase Auth)
+  const loginWithEmail = async (email, password) => {
+    if (!isFirebaseLive || !auth) {
+      throw new Error('Firebase Authentication is not configured. Please paste your Firebase web credentials into client/.env.');
+    }
     setLoading(true);
     try {
-      if (isFirebaseLive) {
-        const fbUser = await loginWithEmailFirebase(email, password);
-        return fbUser;
-      } else {
-        // Locate matching account in student directory or create one with deterministic UID
-        const normalized = email.toLowerCase().trim();
-        let existing = allUsers.find(u => u.email?.toLowerCase() === normalized);
-
-        if (!existing) {
-          const generatedUid = 'uid_' + normalized.replace(/[^a-z0-9]/g, '_');
-          existing = {
-            uid: generatedUid,
-            name: displayName || email.split('@')[0],
-            email: normalized,
-            photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${generatedUid}`,
-            college: 'Tech University',
-            course: 'Computer Science',
-            year: '2nd Year',
-            bio: 'Student on SkillSync.',
-            skillsToTeach: ['Web Development'],
-            skillsToLearn: ['Python'],
-            interests: ['Technology'],
-            availability: ['Monday 5 PM - 8 PM'],
-            credits: 50,
-            rating: 5.0,
-            reviewCount: 0,
-            sessionsCompleted: 0,
-            sessionsTaught: 0,
-            sessionsLearned: 0,
-            badges: ['New Explorer'],
-            createdAt: new Date().toISOString()
-          };
-          saveUser(existing);
-        }
-
-        setCurrentUser(existing);
-        sessionStorage.setItem(SESSION_AUTH_KEY, JSON.stringify(existing));
-        return existing;
-      }
-    } catch (err) {
-      console.error('Email login error:', err);
-      throw err;
+      const fbUser = await loginWithEmailFirebase(email.trim(), password);
+      return fbUser;
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Register New Account
+  // 3. Register New Account (Creates account in Firebase Auth)
   const registerWithEmail = async (email, password, displayName) => {
+    if (!isFirebaseLive || !auth) {
+      throw new Error('Firebase Authentication is not configured. Please paste your Firebase web credentials into client/.env.');
+    }
     setLoading(true);
     try {
-      if (isFirebaseLive) {
-        const fbUser = await registerWithEmailFirebase(email, password, displayName);
-        return fbUser;
-      } else {
-        const normalized = email.toLowerCase().trim();
-        const generatedUid = 'uid_' + Date.now().toString(36);
-        const newAccount = {
-          uid: generatedUid,
-          name: displayName || 'Student',
-          email: normalized,
-          photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${generatedUid}`,
-          college: '',
-          course: '',
-          year: '1st Year',
-          bio: '',
-          skillsToTeach: [],
-          skillsToLearn: [],
-          interests: [],
-          availability: [],
-          credits: 50,
-          rating: 5.0,
-          reviewCount: 0,
-          sessionsCompleted: 0,
-          sessionsTaught: 0,
-          sessionsLearned: 0,
-          badges: ['New Explorer'],
-          createdAt: new Date().toISOString()
-        };
-
-        saveUser(newAccount);
-        setCurrentUser(newAccount);
-        sessionStorage.setItem(SESSION_AUTH_KEY, JSON.stringify(newAccount));
-        return newAccount;
-      }
-    } catch (err) {
-      console.error('Registration error:', err);
-      throw err;
+      const fbUser = await registerWithEmailFirebase(email.trim(), password, displayName?.trim());
+      return fbUser;
     } finally {
       setLoading(false);
     }
   };
 
-  // 4. Save User Profile Document
-  const saveUser = (updatedData) => {
+  // 4. Send Password Reset Email
+  const sendPasswordReset = async (email) => {
+    if (!isFirebaseLive || !auth) {
+      throw new Error('Firebase Authentication is not configured. Please paste your Firebase web credentials into client/.env.');
+    }
+    await sendPasswordResetFirebase(email.trim());
+  };
+
+  // 5. Save / Update User Profile (Firestore: users/{uid} & Backend Store)
+  const saveUser = async (updatedData) => {
+    if (!updatedData?.uid) return;
+
+    // Strict Security Constraint: A user may ONLY save their own profile!
+    if (!user?.uid || updatedData.uid !== user.uid) {
+      console.warn('[AuthContext] Blocked attempt to call saveUser for non-current user:', updatedData?.uid, 'current:', user?.uid);
+      return;
+    }
+
+    const safeData = {
+      ...currentUser,
+      ...updatedData,
+      uid: user.uid,
+      email: user.email,
+      name: updatedData.name || user.displayName || currentUser?.name || 'Student',
+      photoURL: user.photoURL || updatedData.photoURL || currentUser?.photoURL,
+      updatedAt: new Date().toISOString()
+    };
+
+    setProfile(safeData);
+    setCurrentUser(safeData);
+
     setAllUsers(prev => {
-      const idx = prev.findIndex(u => u.uid === updatedData.uid);
+      const idx = prev.findIndex(u => u.uid === safeData.uid);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = { ...next[idx], ...updatedData };
+        next[idx] = { ...next[idx], ...safeData };
         return next;
       }
-      return [...prev, updatedData];
+      return prev;
     });
 
-    if (currentUser?.uid === updatedData.uid) {
-      const updated = { ...currentUser, ...updatedData };
-      setCurrentUser(updated);
-      sessionStorage.setItem(SESSION_AUTH_KEY, JSON.stringify(updated));
-    }
-
     if (isFirebaseLive) {
-      setFirestoreUser(updatedData.uid, updatedData);
+      setFirestoreUser(safeData.uid, safeData).catch(() => {});
     }
-    api.syncUser(updatedData).catch(() => {});
+    await api.syncUser(safeData).catch(() => {});
+    loadAllUsers(user.uid);
   };
 
   const updateProfile = (data) => {
-    if (!currentUser) return;
+    if (!user?.uid) return;
     saveUser({ ...currentUser, ...data });
   };
 
-  // 5. Sign Out
+  // 6. Sign Out
   const logout = async () => {
     setLoading(true);
     try {
@@ -263,25 +337,36 @@ export function AuthProvider({ children }) {
         await logoutFirebase();
       }
     } catch (e) {
-      console.warn('Logout error:', e);
+      console.warn('[AuthContext] Logout error:', e);
     } finally {
+      setUser(null);
+      setProfile(null);
       setCurrentUser(null);
-      sessionStorage.removeItem(SESSION_AUTH_KEY);
+      setAllUsers([]);
       setLoading(false);
     }
   };
 
-  const isProfileComplete = (user = currentUser) => {
-    if (!user) return false;
+  const isProfileComplete = (targetUser = currentUser) => {
+    if (!targetUser) return false;
     return Boolean(
-      user.name && 
-      user.skillsToTeach?.length > 0 && 
-      user.skillsToLearn?.length > 0
+      targetUser.name && 
+      targetUser.skillsToTeach?.length > 0 && 
+      targetUser.skillsToLearn?.length > 0
     );
+  };
+
+  const refreshUsers = () => {
+    if (user?.uid) {
+      return loadAllUsers(user.uid);
+    }
+    return Promise.resolve([]);
   };
 
   return (
     <AuthContext.Provider value={{
+      user,
+      profile,
       currentUser,
       allUsers,
       loading,
@@ -289,10 +374,12 @@ export function AuthProvider({ children }) {
       loginWithGoogle,
       loginWithEmail,
       registerWithEmail,
+      sendPasswordReset,
       updateProfile,
       saveUser,
       logout,
-      isProfileComplete
+      isProfileComplete,
+      refreshUsers
     }}>
       {children}
     </AuthContext.Provider>

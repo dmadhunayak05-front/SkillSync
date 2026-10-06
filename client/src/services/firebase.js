@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile as updateAuthProfile,
+  sendPasswordResetEmail,
   signOut as fbSignOut, 
   onAuthStateChanged 
 } from 'firebase/auth';
@@ -109,7 +110,29 @@ export async function logoutFirebase() {
   }
 }
 
+/**
+ * Send password reset email using Firebase Auth
+ */
+export async function sendPasswordResetFirebase(email) {
+  if (!isFirebaseConfigured() || !auth) {
+    throw new Error('Firebase credentials not configured in .env');
+  }
+  await sendPasswordResetEmail(auth, email);
+}
+
 // ---------------- FIRESTORE DATA METHODS ----------------
+
+/**
+ * Timeout wrapper for Firestore promises to prevent hanging
+ */
+const withTimeout = (promise, ms = 2500) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error(`Firestore request timed out after ${ms}ms`)), ms)
+    )
+  ]);
+};
 
 /**
  * Fetch a single user profile from users/{uid}
@@ -117,13 +140,13 @@ export async function logoutFirebase() {
 export async function getFirestoreUser(uid) {
   if (!db || !uid) return null;
   try {
-    const snap = await getDoc(doc(db, 'users', uid));
-    if (snap.exists()) {
+    const snap = await withTimeout(getDoc(doc(db, 'users', uid)), 2500);
+    if (snap && snap.exists()) {
       return snap.data();
     }
     return null;
   } catch (e) {
-    console.warn('[Firestore] Error getting user doc:', e);
+    console.warn('[Firestore] Error getting user doc:', e.message);
     return null;
   }
 }
@@ -134,12 +157,12 @@ export async function getFirestoreUser(uid) {
 export async function setFirestoreUser(uid, data) {
   if (!db || !uid) return;
   try {
-    await setDoc(doc(db, 'users', uid), {
+    await withTimeout(setDoc(doc(db, 'users', uid), {
       ...data,
       updatedAt: serverTimestamp()
-    }, { merge: true });
+    }, { merge: true }), 2500);
   } catch (e) {
-    console.warn('[Firestore] Error setting user doc:', e);
+    console.warn('[Firestore] Error setting user doc:', e.message);
   }
 }
 
@@ -149,17 +172,19 @@ export async function setFirestoreUser(uid, data) {
 export async function getFirestoreAllUsers(currentUid) {
   if (!db) return [];
   try {
-    const snap = await getDocs(collection(db, 'users'));
+    const snap = await withTimeout(getDocs(collection(db, 'users')), 2500);
     const list = [];
-    snap.forEach(docSnap => {
-      const u = docSnap.data();
-      if (u.uid !== currentUid) {
-        list.push(u);
-      }
-    });
+    if (snap && snap.forEach) {
+      snap.forEach(docSnap => {
+        const u = docSnap.data();
+        if (u.uid !== currentUid) {
+          list.push(u);
+        }
+      });
+    }
     return list;
   } catch (e) {
-    console.warn('[Firestore] Error fetching users list:', e);
+    console.warn('[Firestore] Error fetching users list:', e.message);
     return [];
   }
 }
@@ -170,8 +195,8 @@ export async function getFirestoreAllUsers(currentUid) {
 export async function seedFirestoreProfilesIfEmpty(seedList) {
   if (!db) return;
   try {
-    const snap = await getDocs(collection(db, 'users'));
-    if (snap.empty) {
+    const snap = await withTimeout(getDocs(collection(db, 'users')), 2500);
+    if (snap && snap.empty) {
       console.log('[Firestore] Seeding initial discoverable student profiles...');
       for (const student of seedList) {
         await setDoc(doc(db, 'users', student.uid), {
@@ -181,7 +206,7 @@ export async function seedFirestoreProfilesIfEmpty(seedList) {
       }
     }
   } catch (e) {
-    console.warn('[Firestore] Error seeding initial profiles:', e);
+    console.warn('[Firestore] Error seeding initial profiles:', e.message);
   }
 }
 

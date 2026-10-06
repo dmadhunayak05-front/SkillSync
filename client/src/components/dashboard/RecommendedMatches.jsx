@@ -1,9 +1,12 @@
 import React from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { MatchBadge, SkillTag } from '../common/Badge';
-import { Sparkles, ArrowRight, Star, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Star, CheckCircle2, UserCheck } from 'lucide-react';
 
 export default function RecommendedMatches({ matches, onConnect, onViewProfile, onNavigate }) {
+  const { currentUser } = useAuth();
   const topMatches = matches.slice(0, 3);
+  const needsProfileCompletion = (currentUser?.skillsToTeach?.length || 0) === 0 && (currentUser?.skillsToLearn?.length || 0) === 0;
 
   return (
     <div className="space-y-4">
@@ -26,7 +29,37 @@ export default function RecommendedMatches({ matches, onConnect, onViewProfile, 
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Profile completion notice if skills are not yet listed */}
+      {needsProfileCompletion && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-extrabold text-brand-950">Complete your profile to improve your matches</p>
+              <p className="text-[11px] text-brand-700">Add the skills you want to learn and share to unlock higher-accuracy compatibility scores.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate('onboarding')}
+            className="py-1.5 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs flex-shrink-0 shadow-xs transition-colors"
+          >
+            Add Skills
+          </button>
+        </div>
+      )}
+
+      {topMatches.length === 0 ? (
+        <div className="bg-white rounded-3xl p-8 border border-slate-200/80 text-center space-y-2">
+          <Sparkles className="w-8 h-8 text-slate-300 mx-auto" />
+          <p className="text-sm font-bold text-slate-700">No other registered peers yet</p>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Once other students register and complete their profiles, they will automatically appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {topMatches.map(({ user, score, reasons, breakdown }) => (
           <div
             key={user.uid}
@@ -110,7 +143,8 @@ export default function RecommendedMatches({ matches, onConnect, onViewProfile, 
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

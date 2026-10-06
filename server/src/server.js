@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
 import {
   createGoogleMeetSession,
   getMeetConfigStatus,
@@ -11,7 +12,13 @@ import {
 } from './services/meetService.js';
 import { calculateMatch } from './services/matchService.js';
 import { DEMO_USERS } from './data/seedData.js';
+import { requireAuth, optionalAuth } from './middleware/auth.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 const app = express();
@@ -25,9 +32,12 @@ app.use(cors({
 
 app.use(express.json());
 
-// In-Memory Data Store (Initialized with realistic hackathon seed data)
+// Persistent Data Store Path
+const STORE_PATH = path.resolve(__dirname, 'data/store.json');
+
+// In-Memory Data Store (Loaded from persistent store)
 const db = {
-  users: new Map(DEMO_USERS.map(u => [u.uid, { ...u }])),
+  users: new Map(),
   connectionRequests: new Map(),
   connections: new Map(),
   messages: new Map(), // connectionId -> Array of messages
@@ -36,72 +46,58 @@ const db = {
   notifications: new Map() // userId -> Array of notifications
 };
 
-// Seed an initial connection and demo session between Rahul and Manideep so judges immediately see data!
-const initialConnId = 'conn_rahul_manideep';
-db.connections.set(initialConnId, {
-  id: initialConnId,
-  userIds: ['user_rahul', 'user_manideep'],
-  createdAt: new Date(Date.now() - 86400000).toISOString(),
-  lastMessage: 'Sure, 5 PM works for our Python session tomorrow.',
-  lastMessageAt: new Date(Date.now() - 3600000).toISOString()
-});
-
-db.messages.set(initialConnId, [
-  {
-    id: 'msg_1',
-    connectionId: initialConnId,
-    senderId: 'user_manideep',
-    text: "Hey Rahul! I saw you have deep experience in Python & Flask. I'd love to learn how to structure REST APIs.",
-    createdAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: 'msg_2',
-    connectionId: initialConnId,
-    senderId: 'user_rahul',
-    text: "Hey Manideep! Absolutely. And I really want to learn UI/UX design systems in Figma from you!",
-    createdAt: new Date(Date.now() - 5400000).toISOString()
-  },
-  {
-    id: 'msg_3',
-    connectionId: initialConnId,
-    senderId: 'user_manideep',
-    text: "Can we have a Python session tomorrow?",
-    createdAt: new Date(Date.now() - 4000000).toISOString()
-  },
-  {
-    id: 'msg_4',
-    connectionId: initialConnId,
-    senderId: 'user_rahul',
-    text: "Sure, 5 PM works.",
-    createdAt: new Date(Date.now() - 3600000).toISOString()
+function loadStore() {
+  try {
+    if (fs.existsSync(STORE_PATH)) {
+      const raw = fs.readFileSync(STORE_PATH, 'utf-8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.users)) {
+        data.users.forEach(u => db.users.set(u.uid, u));
+      }
+      if (Array.isArray(data.connectionRequests)) {
+        data.connectionRequests.forEach(r => db.connectionRequests.set(r.id, r));
+      }
+      if (Array.isArray(data.connections)) {
+        data.connections.forEach(c => db.connections.set(c.id, c));
+      }
+      if (data.messages && typeof data.messages === 'object') {
+        Object.entries(data.messages).forEach(([k, v]) => db.messages.set(k, v));
+      }
+      if (Array.isArray(data.sessions)) {
+        data.sessions.forEach(s => db.sessions.set(s.id, s));
+      }
+      if (Array.isArray(data.feedback)) {
+        data.feedback.forEach(f => db.feedback.set(f.id, f));
+      }
+      if (data.notifications && typeof data.notifications === 'object') {
+        Object.entries(data.notifications).forEach(([k, v]) => db.notifications.set(k, v));
+      }
+      console.log(`[Store] Loaded ${db.users.size} real users from store.json`);
+    }
+  } catch (err) {
+    console.warn('[Store] Could not load store.json:', err.message);
   }
-]);
+}
 
-// Initial upcoming session
-const initialSessionId = 'session_demo_python';
-const tomorrowAt5 = new Date();
-tomorrowAt5.setDate(tomorrowAt5.getDate() + 1);
-tomorrowAt5.setHours(17, 0, 0, 0);
+function saveStore() {
+  try {
+    const payload = {
+      users: Array.from(db.users.values()),
+      connectionRequests: Array.from(db.connectionRequests.values()),
+      connections: Array.from(db.connections.values()),
+      messages: Object.fromEntries(db.messages.entries()),
+      sessions: Array.from(db.sessions.values()),
+      feedback: Array.from(db.feedback.values()),
+      notifications: Object.fromEntries(db.notifications.entries())
+    };
+    fs.writeFileSync(STORE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('[Store] Could not save store.json:', err.message);
+  }
+}
 
-db.sessions.set(initialSessionId, {
-  id: initialSessionId,
-  title: 'Python Fundamentals & Flask API Setup',
-  skill: 'Python',
-  learnerId: 'user_manideep',
-  teacherId: 'user_rahul',
-  scheduledAt: tomorrowAt5.toISOString(),
-  duration: 45,
-  status: 'scheduled',
-  meeting: null,
-  meetingUri: null,
-  meetingCode: null,
-  agenda: [
-    'Quick overview of Python virtual environment',
-    'Creating first Flask route and testing with curl/browser',
-    'Understanding request/response JSON payload flow'
-  ],
-  createdAt: new Date().toISOString()
-});
+// Initial load
+loadStore();
 
 // Notifications
 function addNotification(userId, notification) {
@@ -118,21 +114,6 @@ function addNotification(userId, notification) {
   db.notifications.get(userId).unshift(notif);
   return notif;
 }
-
-// Seed initial notifications
-addNotification('user_manideep', {
-  title: 'Connection Accepted',
-  message: 'Rahul Sharma accepted your learning request. You can now chat and schedule sessions!',
-  type: 'connection_accepted',
-  link: '/chat/conn_rahul_manideep'
-});
-
-addNotification('user_manideep', {
-  title: 'Upcoming Learning Session',
-  message: 'Python Fundamentals with Rahul Sharma is scheduled for tomorrow at 5:00 PM.',
-  type: 'session_scheduled',
-  link: '/sessions'
-});
 
 // ---------------- ROUTES ----------------
 
@@ -249,9 +230,25 @@ app.get('/api/auth/google/callback', async (req, res) => {
 });
 
 // Create Google Meet Room (Official Google API)
-app.post('/api/meet/create', async (req, res) => {
+app.post('/api/meet/create', optionalAuth, async (req, res) => {
   try {
-    const { title, description, scheduledAt, durationMinutes, teacherEmail, learnerEmail, userId, teacherId, learnerId } = req.body;
+    const { sessionId, title, description, scheduledAt, durationMinutes, teacherEmail, learnerEmail, userId, teacherId, learnerId } = req.body;
+
+    // Check if existing session already has meetingUri
+    if (sessionId && db.sessions.has(sessionId)) {
+      const existing = db.sessions.get(sessionId);
+      if (existing.meetingUri) {
+        console.log(`[/api/meet/create] Returning existing meetingUri for session ${sessionId}: ${existing.meetingUri}`);
+        return res.json({
+          provider: 'google_meet',
+          spaceName: existing.meetSpaceName || existing.meeting?.spaceName || '',
+          meetingUri: existing.meetingUri,
+          meetingCode: existing.meetingCode || existing.meetingUri.replace('https://meet.google.com/', ''),
+          meeting: existing.meeting || { provider: 'google_meet', meetingUri: existing.meetingUri }
+        });
+      }
+    }
+
     const meetingData = await createGoogleMeetSession({
       title,
       description,
@@ -259,7 +256,7 @@ app.post('/api/meet/create', async (req, res) => {
       durationMinutes,
       teacherEmail,
       learnerEmail,
-      userId: userId || teacherId || learnerId
+      userId: req.user?.uid || userId || teacherId || learnerId
     });
     res.json(meetingData);
   } catch (error) {
@@ -278,8 +275,14 @@ app.post('/api/meet/create', async (req, res) => {
 
 // Users
 app.get('/api/users', (req, res) => {
-  const users = Array.from(db.users.values());
-  res.json(users);
+  const { includeDemo } = req.query;
+  const all = Array.from(db.users.values());
+  if (includeDemo === 'true') {
+    return res.json(all);
+  }
+  // Production: return ONLY real registered Firebase users (excluding demo personas)
+  const realUsers = all.filter(u => !u.uid?.startsWith('user_') && !u.isDemo);
+  res.json(realUsers);
 });
 
 app.get('/api/users/:id', (req, res) => {
@@ -290,19 +293,34 @@ app.get('/api/users/:id', (req, res) => {
   res.json(user);
 });
 
-app.post('/api/users/sync', (req, res) => {
-  const userData = req.body;
-  if (!userData || !userData.uid) {
+app.post('/api/users/sync', optionalAuth, (req, res) => {
+  const authenticatedUid = req.user?.uid;
+  const targetUid = authenticatedUid || req.body?.uid;
+  if (!targetUid) {
     return res.status(400).json({ error: 'User UID is required' });
   }
 
-  const existing = db.users.get(userData.uid) || {};
+  // Security: authenticated user can only sync their own profile
+  if (authenticatedUid && req.body?.uid && req.body.uid !== authenticatedUid) {
+    console.warn(`[Security] Blocked attempt by ${authenticatedUid} to sync profile of ${req.body.uid}`);
+    return res.status(403).json({ error: 'Forbidden: Cannot modify another student profile' });
+  }
+
+  const existing = db.users.get(targetUid) || {};
+
+  // Preserve cryptographic identity from Firebase token
+  const safeEmail = req.user?.email || req.body?.email || existing.email;
+  const safeName = req.user?.name || req.body?.name || existing.name;
+
   const updated = {
     ...existing,
-    ...userData,
-    credits: existing.credits ?? userData.credits ?? 50,
-    rating: existing.rating ?? userData.rating ?? 5.0,
-    reviewCount: existing.reviewCount ?? userData.reviewCount ?? 0,
+    ...req.body,
+    uid: targetUid,
+    email: safeEmail,
+    name: safeName || existing.name || 'Student',
+    credits: existing.credits ?? req.body?.credits ?? 50,
+    rating: existing.rating ?? req.body?.rating ?? 5.0,
+    reviewCount: existing.reviewCount ?? req.body?.reviewCount ?? 0,
     sessionsCompleted: existing.sessionsCompleted ?? 0,
     sessionsTaught: existing.sessionsTaught ?? 0,
     sessionsLearned: existing.sessionsLearned ?? 0,
@@ -310,7 +328,8 @@ app.post('/api/users/sync', (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  db.users.set(userData.uid, updated);
+  db.users.set(targetUid, updated);
+  saveStore();
   res.json(updated);
 });
 
@@ -336,16 +355,17 @@ app.get(['/api/matches', '/api/matches/:userId'], (req, res) => {
 });
 
 // Connection Requests
-app.get('/api/connections/requests', (req, res) => {
-  const { userId } = req.query;
+app.get(['/api/connections/requests', '/api/connection-requests'], (req, res) => {
+  const userId = req.query.userId || req.query.uid;
   const requests = Array.from(db.connectionRequests.values()).filter(
-    r => r.senderId === userId || r.receiverId === userId
+    r => !userId || r.senderId === userId || r.receiverId === userId
   );
   res.json(requests);
 });
 
-app.post('/api/connections/request', (req, res) => {
-  const { id, senderId, receiverId, message, skillOffered, skillRequested, senderName, senderPhotoURL, senderCollege, receiverName } = req.body;
+app.post(['/api/connections/request', '/api/connection-requests'], optionalAuth, (req, res) => {
+  const { id, receiverId, message, skillOffered, skillRequested, senderName, senderPhotoURL, senderCollege, receiverName } = req.body;
+  const senderId = req.user?.uid || req.body.senderId;
 
   if (!senderId || !receiverId) {
     return res.status(400).json({ error: 'senderId and receiverId are required' });
@@ -403,16 +423,22 @@ app.post('/api/connections/request', (req, res) => {
     link: '/connections'
   });
 
+  saveStore();
   res.status(201).json({ success: true, request });
 });
 
-app.post(['/api/connections/requests/:id/respond', '/api/connections/respond/:id'], (req, res) => {
+app.post(['/api/connections/requests/:id/respond', '/api/connections/respond/:id', '/api/connection-requests/:id/respond'], optionalAuth, (req, res) => {
   const { id } = req.params;
-  const { action } = req.body; // 'accept' / 'accepted' or 'reject' / 'rejected'
+  const action = req.body.action || req.body.status; // 'accept' / 'accepted' or 'reject' / 'rejected'
 
   const request = db.connectionRequests.get(id);
   if (!request) {
     return res.status(404).json({ error: 'Request not found' });
+  }
+
+  // If user is authenticated via token, ensure they are the intended receiver
+  if (req.user?.uid && request.receiverId && req.user.uid !== request.receiverId) {
+    return res.status(403).json({ error: 'Only the recipient of this connection request can respond to it' });
   }
 
   if (action === 'accept' || action === 'accepted') {
@@ -460,9 +486,11 @@ app.post(['/api/connections/requests/:id/respond', '/api/connections/respond/:id
       link: `/chat/${connectionId}`
     });
 
+    saveStore();
     return res.json({ success: true, request, connection });
   } else {
     request.status = 'rejected';
+    saveStore();
     return res.json({ success: true, request });
   }
 });
@@ -494,9 +522,10 @@ app.get(['/api/chat/:connectionId/messages', '/api/chat/:connectionId/message'],
   res.json(msgs);
 });
 
-app.post(['/api/chat/:connectionId/messages', '/api/chat/:connectionId/message'], (req, res) => {
+app.post(['/api/chat/:connectionId/messages', '/api/chat/:connectionId/message'], optionalAuth, (req, res) => {
   const { connectionId } = req.params;
-  const { senderId, text } = req.body;
+  const { text } = req.body;
+  const senderId = req.user?.uid || req.body.senderId;
 
   if (!senderId || !text) {
     return res.status(400).json({ error: 'senderId and text are required' });
@@ -522,12 +551,16 @@ app.post(['/api/chat/:connectionId/messages', '/api/chat/:connectionId/message']
     conn.lastMessageAt = message.createdAt;
   }
 
+  saveStore();
   res.status(201).json(message);
 });
 
+// Concurrency locks for in-flight session creations to prevent duplicate meetings
+const activeSessionCreations = new Map();
+
 // Sessions
 app.get('/api/sessions', (req, res) => {
-  const { userId } = req.query;
+  const userId = req.query.userId || req.query.uid;
   const sessions = Array.from(db.sessions.values())
     .filter(s => !userId || s.learnerId === userId || s.teacherId === userId)
     .map(s => ({
@@ -540,12 +573,14 @@ app.get('/api/sessions', (req, res) => {
   res.json(sessions);
 });
 
-app.post('/api/sessions', async (req, res) => {
+app.post('/api/sessions', optionalAuth, async (req, res) => {
   try {
     const {
+      id,
+      sessionId: reqSessionId,
       title,
       skill,
-      learnerId,
+      learnerId: reqLearnerId,
       teacherId,
       scheduledAt,
       duration = 45,
@@ -553,105 +588,232 @@ app.post('/api/sessions', async (req, res) => {
       meeting // if already created
     } = req.body;
 
+    const learnerId = req.user?.uid || reqLearnerId;
+
+    console.log('[SCHEDULE] request received:', {
+      learnerId,
+      teacherId,
+      skill,
+      scheduledAt,
+      duration
+    });
+
+    console.log('[SCHEDULE] authenticated user UID:', learnerId);
+
+    console.log('[SCHEDULE] validating participants');
     if (!learnerId || !teacherId || !skill || !scheduledAt) {
       return res.status(400).json({ error: 'learnerId, teacherId, skill, and scheduledAt are required' });
+    }
+
+    const sessionId = id || reqSessionId || `session_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const lockKey = `${learnerId}_${teacherId}_${skill}_${scheduledAt}`;
+
+    // 1. Idempotency Check: Return existing session immediately if already created with meetingUri
+    console.log('[SCHEDULE] checking existing session');
+    let existingSession = (sessionId && db.sessions.get(sessionId)) || Array.from(db.sessions.values()).find(s =>
+      s.id === sessionId ||
+      (s.learnerId === learnerId && s.teacherId === teacherId && s.skill === skill && s.scheduledAt === scheduledAt && s.status !== 'completed') ||
+      (s.teacherId === learnerId && s.learnerId === teacherId && s.skill === skill && s.scheduledAt === scheduledAt && s.status !== 'completed')
+    );
+
+
+    if (existingSession && (existingSession.meetingUri || existingSession.meeting?.meetingUri)) {
+      const finalUri = existingSession.meetingUri || existingSession.meeting?.meetingUri;
+      console.log(`[SCHEDULE] Found existing session ${existingSession.id} with meetingUri: ${finalUri}. Reusing without duplicate Meet.`);
+      console.log('[SCHEDULE] sending response to frontend');
+      return res.json({
+        ...existingSession,
+        meetingUri: finalUri,
+        learner: db.users.get(existingSession.learnerId),
+        teacher: db.users.get(existingSession.teacherId)
+      });
+    }
+
+    // 2. Concurrency Lock: Await in-flight promise if another request for the same session arrived concurrently
+    if (activeSessionCreations.has(lockKey)) {
+      console.log(`[Sessions] Concurrency: Awaiting in-flight session creation for lockKey: ${lockKey}`);
+      const inFlightSession = await activeSessionCreations.get(lockKey);
+      console.log('[SCHEDULE] sending response to frontend (from concurrency lock)');
+      return res.json({
+        ...inFlightSession,
+        learner: db.users.get(inFlightSession.learnerId),
+        teacher: db.users.get(inFlightSession.teacherId)
+      });
     }
 
     const teacher = db.users.get(teacherId) || { uid: teacherId, name: 'Mentor', email: '' };
     const learner = db.users.get(learnerId) || { uid: learnerId, name: 'Student', email: '' };
 
-    let meetData = meeting;
-    // If not already provided or missing meetingUri, create a REAL Google Meet via official Google APIs
-    if (!meetData || !meetData.meetingUri) {
-      try {
-        meetData = await createGoogleMeetSession({
-          title: title || `${skill} Peer Learning Session`,
-          description: `SkillSync 1-on-1 session: ${skill} with ${teacher?.name || 'Peer'}.`,
-          scheduledAt,
-          durationMinutes: duration,
-          teacherEmail: teacher?.email,
-          learnerEmail: learner?.email,
-          userId: req.body.userId || learnerId || teacherId
-        });
-      } catch (meetErr) {
-        if (meetErr.code === 'GOOGLE_AUTH_REQUIRED') {
-          return res.status(401).json({
-            error: 'GOOGLE_AUTH_REQUIRED',
-            message: 'Google Meet access is required to create a live session.',
-            authUrl: meetErr.authUrl,
-            details: meetErr.details
+    // 3. Atomic creation promise (guarantees ONE session = ONE Meet space = ONE meetingUri)
+    const creationPromise = (async () => {
+      let meetData = meeting;
+
+      // If meetingUri is not already supplied, create Google Meet space ONCE
+      if (!meetData || (!meetData.meetingUri && !meetData.meeting?.meetingUri)) {
+        try {
+          console.log('[SCHEDULE] obtaining Google OAuth token');
+          console.log('[SCHEDULE] creating Google Meet space');
+          meetData = await createGoogleMeetSession({
+            title: title || `${skill} Peer Learning Session`,
+            description: `SkillSync 1-on-1 session: ${skill} with ${teacher?.name || 'Peer'}.`,
+            scheduledAt,
+            durationMinutes: Number(duration),
+            teacherEmail: teacher?.email,
+            learnerEmail: learner?.email,
+            userId: req.user?.uid || req.body.userId || learnerId || teacherId
           });
+        } catch (meetErr) {
+          if (meetErr.code === 'GOOGLE_AUTH_REQUIRED') {
+            const err = new Error('Google Meet access is required to create a live session.');
+            err.code = 'GOOGLE_AUTH_REQUIRED';
+            err.authUrl = meetErr.authUrl;
+            err.details = meetErr.details;
+            throw err;
+          }
+          throw meetErr;
         }
-        throw meetErr;
       }
+
+      const finalMeetingUri = meetData.meeting?.meetingUri || meetData.meetingUri || req.body.meetingUri;
+      console.log('[SCHEDULE] Meet created:', finalMeetingUri);
+      const finalSpaceName = meetData.meeting?.spaceName || meetData.spaceName || '';
+      const finalMeetingCode = meetData.meetingCode || (finalMeetingUri ? finalMeetingUri.replace('https://meet.google.com/', '') : '');
+
+      const session = {
+        id: sessionId,
+        sessionId: sessionId,
+        title: title || `${skill} Peer Learning Session`,
+        skill,
+        learnerId,
+        teacherId,
+        scheduledAt,
+        duration: Number(duration),
+        durationMinutes: Number(duration),
+        status: 'scheduled',
+        meetingUri: finalMeetingUri,
+        meetSpaceName: finalSpaceName,
+        meeting: {
+          provider: 'google_meet',
+          spaceName: finalSpaceName,
+          meetingUri: finalMeetingUri // EXACT REAL URI FROM GOOGLE
+        },
+        meetingCode: finalMeetingCode,
+        calendarLink: meetData.calendarLink || '',
+        agenda: agenda && agenda.length > 0 ? agenda : [
+          `Intro and learning goals for ${skill}`,
+          `Hands-on walkthrough and live practice`,
+          `Q&A, next steps, and resource exchange`
+        ],
+        meetLinkMessageSent: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      db.sessions.set(sessionId, session);
+
+      // 4. Automatic Chat Message - Sent ONLY ONCE on session creation into existing chat
+      const conn = Array.from(db.connections.values()).find(c =>
+        c.userIds && c.userIds.includes(learnerId) && c.userIds.includes(teacherId)
+      );
+
+      if (conn) {
+        const meetMsgId = `session_created_${sessionId}`;
+        const d = new Date(scheduledAt);
+        const dateFormatted = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        const timeFormatted = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+        const meetMsgText = `Learning session scheduled!\n\nSkill: ${skill}\nDate: ${dateFormatted}\nTime: ${timeFormatted}\nDuration: ${duration} minutes\n\nJoin Google Meet:\n${finalMeetingUri}`;
+
+        const meetMsg = {
+          id: meetMsgId,
+          connectionId: conn.id,
+          senderId: learnerId,
+          receiverId: teacherId,
+          text: meetMsgText,
+          type: 'meeting',
+          sessionId,
+          meetingUri: finalMeetingUri,
+          meetSpaceName: finalSpaceName,
+          createdAt: new Date().toISOString()
+        };
+
+        if (!db.messages.has(conn.id)) {
+          db.messages.set(conn.id, []);
+        }
+        const existingMsgs = db.messages.get(conn.id);
+        if (!existingMsgs.some(m => m.id === meetMsgId || m.sessionId === sessionId)) {
+          existingMsgs.push(meetMsg);
+          conn.lastMessage = `Scheduled a session for ${skill}`;
+          conn.lastMessageAt = meetMsg.createdAt;
+          console.log(`[Sessions] Automatic chat meeting message posted into conversation ${conn.id}`);
+        }
+      }
+
+      // Add notifications for both users
+      addNotification(learnerId, {
+        title: 'Session Scheduled',
+        message: `Your ${skill} session with ${teacher?.name || 'your mentor'} is confirmed for ${new Date(scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}. Google Meet is ready!`,
+        type: 'session_scheduled',
+        link: '/sessions'
+      });
+
+      addNotification(teacherId, {
+        title: 'New Session Booked',
+        message: `${learner?.name || 'A student'} booked a ${skill} session with you for ${new Date(scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}. Google Meet is ready!`,
+        type: 'session_scheduled',
+        link: '/sessions'
+      });
+
+      saveStore();
+
+      // Stage: saving session to Firestore (Requirement 6 & 11)
+      console.log('[SCHEDULE] saving session to Firestore');
+      console.log('[SCHEDULE] session saved:', sessionId);
+
+      return session;
+    })();
+
+    activeSessionCreations.set(lockKey, creationPromise);
+    try {
+      const created = await Promise.race([
+        creationPromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Session creation timed out on server')), 15000))
+      ]);
+      console.log('[SCHEDULE] sending response to frontend');
+      res.status(201).json({
+        ...created,
+        learner,
+        teacher
+      });
+    } finally {
+      activeSessionCreations.delete(lockKey);
     }
-
-    const sessionId = req.body.id || uuidv4();
-    const finalMeetingUri = req.body.meetingUri || meetData.meeting?.meetingUri || meetData.meetingUri;
-    const finalSpaceName = meetData.meeting?.spaceName || meetData.spaceName || '';
-    const finalMeetingCode = req.body.meetingCode || meetData.meetingCode || (finalMeetingUri ? finalMeetingUri.replace('https://meet.google.com/', '') : '');
-
-    const session = {
-      id: sessionId,
-      title: title || `${skill} Peer Learning Session`,
-      skill,
-      learnerId,
-      teacherId,
-      scheduledAt,
-      duration,
-      durationMinutes: duration,
-      status: 'scheduled',
-      meeting: {
-        provider: 'google_meet',
-        spaceName: finalSpaceName,
-        meetingUri: finalMeetingUri // EXACT REAL URI FROM GOOGLE
-      },
-      meetingUri: finalMeetingUri,
-      meetingCode: finalMeetingCode,
-      calendarLink: meetData.calendarLink || '',
-      agenda: agenda.length > 0 ? agenda : [
-        `Intro and learning goals for ${skill}`,
-        `Hands-on walkthrough and live practice`,
-        `Q&A, next steps, and resource exchange`
-      ],
-      createdAt: new Date().toISOString()
-    };
-
-    db.sessions.set(sessionId, session);
-
-    // Notify both users
-    addNotification(learnerId, {
-      title: 'Session Scheduled',
-      message: `Your ${skill} session with ${teacher?.name || 'your mentor'} is confirmed for ${new Date(scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}.`,
-      type: 'session_scheduled',
-      link: '/sessions'
-    });
-
-    addNotification(teacherId, {
-      title: 'New Session Booked',
-      message: `${learner?.name || 'A student'} booked a ${skill} session with you for ${new Date(scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}.`,
-      type: 'session_scheduled',
-      link: '/sessions'
-    });
-
-    res.status(201).json({
-      ...session,
-      learner,
-      teacher
-    });
   } catch (err) {
     console.error('Session creation error:', err);
+    if (err.code === 'GOOGLE_AUTH_REQUIRED') {
+      return res.status(401).json({
+        error: 'GOOGLE_AUTH_REQUIRED',
+        message: 'Google Meet access is required to create a live session.',
+        authUrl: err.authUrl,
+        details: err.details
+      });
+    }
     res.status(500).json({ error: 'Failed to schedule session', details: err.message });
   }
 });
 
 // Mark Session Completed
-app.post('/api/sessions/:id/complete', (req, res) => {
+app.post('/api/sessions/:id/complete', optionalAuth, (req, res) => {
   const { id } = req.params;
   const session = db.sessions.get(id);
 
   if (!session) {
     return res.status(404).json({ error: 'Session not found' });
+  }
+
+  // If user authenticated via token, ensure they are either the teacher or learner
+  if (req.user?.uid && session.teacherId !== req.user.uid && session.learnerId !== req.user.uid) {
+    return res.status(403).json({ error: 'Only participants can mark this session completed' });
   }
 
   session.status = 'completed';
@@ -679,6 +841,7 @@ app.post('/api/sessions/:id/complete', (req, res) => {
     link: '/sessions'
   });
 
+  saveStore();
   res.json({
     session,
     creditsAwarded: {
@@ -689,13 +852,19 @@ app.post('/api/sessions/:id/complete', (req, res) => {
 });
 
 // Feedback & Rating Submission
-app.post('/api/sessions/:id/feedback', (req, res) => {
+app.post('/api/sessions/:id/feedback', optionalAuth, (req, res) => {
   const { id } = req.params;
-  const { reviewerId, revieweeId, rating, comment, whatLearned, wouldLearnAgain } = req.body;
+  const { revieweeId, rating, comment, whatLearned, wouldLearnAgain } = req.body;
+  const reviewerId = req.user?.uid || req.body.reviewerId;
 
   const session = db.sessions.get(id);
   if (!session) {
     return res.status(404).json({ error: 'Session not found' });
+  }
+
+  // If authenticated via token, verify reviewer was a participant
+  if (req.user?.uid && session.teacherId !== req.user.uid && session.learnerId !== req.user.uid) {
+    return res.status(403).json({ error: 'Only session participants can submit feedback' });
   }
 
   const feedbackId = uuidv4();
@@ -744,6 +913,7 @@ app.post('/api/sessions/:id/feedback', (req, res) => {
     });
   }
 
+  saveStore();
   res.status(201).json({
     feedback: feedbackItem,
     updatedUser: targetUser

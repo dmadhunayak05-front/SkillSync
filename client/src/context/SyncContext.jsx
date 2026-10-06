@@ -57,7 +57,23 @@ export function SyncProvider({ children }) {
   // 6. Notifications
   const [notifications, setNotifications] = useState([]);
 
-  // Clear or initialize user-specific real-time Firestore listeners
+  // Helper to load and sync messages for a connection
+  const loadMessages = useCallback(async (connectionId) => {
+    if (!connectionId) return;
+    try {
+      const msgs = await api.getMessages(connectionId);
+      if (Array.isArray(msgs)) {
+        setMessages(prev => ({
+          ...prev,
+          [connectionId]: msgs
+        }));
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // Real-time synchronization: Firestore listeners AND live backend polling
   useEffect(() => {
     if (!currentUser?.uid) {
       setRequests([]);
@@ -67,51 +83,109 @@ export function SyncProvider({ children }) {
       return;
     }
 
+    let unsubReq = () => {};
+    let unsubConn = () => {};
+    let unsubSessions = () => {};
+    let unsubFeedback = () => {};
+
     if (isFirebaseLive) {
-      console.log('[SyncContext] Subscribing to real-time Firestore listeners for UID:', currentUser.uid);
+      try {
+        unsubReq = listenToFirestoreRequests(currentUser.uid, (remoteRequests) => {
+          if (Array.isArray(remoteRequests)) {
+            setRequests(prev => {
+              const map = new Map();
+              prev.forEach(r => map.set(r.id, r));
+              remoteRequests.forEach(r => map.set(r.id, r));
+              return Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            });
+          }
+        });
 
-      const unsubReq = listenToFirestoreRequests(currentUser.uid, (remoteRequests) => {
-        setRequests(remoteRequests || []);
-      });
+        unsubConn = listenToFirestoreConnections(currentUser.uid, (remoteConns) => {
+          if (Array.isArray(remoteConns)) {
+            setConnections(prev => {
+              const map = new Map();
+              prev.forEach(c => map.set(c.id, c));
+              remoteConns.forEach(c => map.set(c.id, c));
+              return Array.from(map.values());
+            });
+          }
+        });
 
-      const unsubConn = listenToFirestoreConnections(currentUser.uid, (remoteConns) => {
-        setConnections(remoteConns || []);
-      });
+        unsubSessions = listenToFirestoreSessions(currentUser.uid, (remoteSessions) => {
+          if (Array.isArray(remoteSessions)) {
+            setSessions(prev => {
+              const map = new Map();
+              prev.forEach(s => map.set(s.id, s));
+              remoteSessions.forEach(s => map.set(s.id, s));
+              return Array.from(map.values()).sort((a, b) => new Date(a.scheduledAt || 0) - new Date(b.scheduledAt || 0));
+            });
+          }
+        });
 
-      const unsubSessions = listenToFirestoreSessions(currentUser.uid, (remoteSessions) => {
-        setSessions(remoteSessions || []);
-      });
-
-      const unsubFeedback = listenToFirestoreFeedback(currentUser.uid, (remoteFeedback) => {
-        setFeedback(remoteFeedback || []);
-      });
-
-      return () => {
-        unsubReq();
-        unsubConn();
-        unsubSessions();
-        unsubFeedback();
-      };
-    } else {
-      // Backend polling fallback for multi-browser sync when live Firebase credentials are not yet entered in .env
-      const syncFromBackend = async () => {
-        try {
-          const [reqs, conns, sess] = await Promise.all([
-            api.getConnectionRequests(currentUser.uid),
-            api.getConnections(currentUser.uid),
-            api.getSessions(currentUser.uid)
-          ]);
-          if (Array.isArray(reqs)) setRequests(reqs);
-          if (Array.isArray(conns)) setConnections(conns);
-          if (Array.isArray(sess)) setSessions(sess);
-        } catch (e) {
-          // silently handle
-        }
-      };
-      syncFromBackend();
-      const interval = setInterval(syncFromBackend, 2500);
-      return () => clearInterval(interval);
+        unsubFeedback = listenToFirestoreFeedback(currentUser.uid, (remoteFeedback) => {
+          if (Array.isArray(remoteFeedback)) {
+            setFeedback(prev => {
+              const map = new Map();
+              prev.forEach(f => map.set(f.id, f));
+              remoteFeedback.forEach(f => map.set(f.id, f));
+              return Array.from(map.values());
+            });
+          }
+        });
+      } catch (err) {
+        console.warn('[SyncContext] Firestore listener setup error:', err);
+      }
     }
+
+    // Dual-sync live polling: guarantees cross-browser synchronization in real-time
+    const syncFromBackend = async () => {
+      try {
+        const [reqs, conns, sess] = await Promise.all([
+          api.getConnectionRequests(currentUser.uid).catch(() => []),
+          api.getConnections(currentUser.uid).catch(() => []),
+          api.getSessions(currentUser.uid).catch(() => [])
+        ]);
+
+        if (Array.isArray(reqs)) {
+          setRequests(prev => {
+            const map = new Map();
+            prev.forEach(r => map.set(r.id, r));
+            reqs.forEach(r => map.set(r.id, r));
+            return Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          });
+        }
+        if (Array.isArray(conns)) {
+          setConnections(prev => {
+            const map = new Map();
+            prev.forEach(c => map.set(c.id, c));
+            conns.forEach(c => map.set(c.id, c));
+            return Array.from(map.values());
+          });
+        }
+        if (Array.isArray(sess)) {
+          setSessions(prev => {
+            const map = new Map();
+            prev.forEach(s => map.set(s.id, s));
+            sess.forEach(s => map.set(s.id, s));
+            return Array.from(map.values()).sort((a, b) => new Date(a.scheduledAt || 0) - new Date(b.scheduledAt || 0));
+          });
+        }
+      } catch (e) {
+        // silently handle
+      }
+    };
+
+    syncFromBackend();
+    const interval = setInterval(syncFromBackend, 2000);
+
+    return () => {
+      unsubReq();
+      unsubConn();
+      unsubSessions();
+      unsubFeedback();
+      clearInterval(interval);
+    };
   }, [currentUser?.uid, isFirebaseLive]);
 
   // Handle incoming broadcast messages from other tabs / windows
@@ -367,7 +441,7 @@ export function SyncProvider({ children }) {
     return message;
   };
 
-  // 4. Schedule Learning Session with REAL Google Meet
+  // 4. Schedule Learning Session with REAL Google Meet (Single Controlled Creation Path)
   const scheduleSession = async ({
     title,
     skill,
@@ -378,58 +452,43 @@ export function SyncProvider({ children }) {
   }) => {
     if (!currentUser?.uid) throw new Error('Must be logged in');
 
-    const teacher = allUsers.find(u => u.uid === peerId);
-
-    // Call SkillSync backend to create a REAL Google Meet space via Google's official API
-    // NO fake or random codes. The exact URI returned by Google is our single source of truth.
-    const res = await api.createGoogleMeet({
-      title: title || `${skill} Peer Learning Session`,
-      scheduledAt,
-      durationMinutes: Number(duration),
-      teacherEmail: teacher?.email,
-      learnerEmail: currentUser.email,
-      userId: currentUser.uid,
-      teacherId: peerId,
-      learnerId: currentUser.uid
-    });
-
-    const realMeetingUri = res.meeting?.meetingUri || res.meetingUri;
-    const realSpaceName = res.meeting?.spaceName || res.spaceName || '';
-    const realMeetingCode = res.meetingCode || realMeetingUri?.replace('https://meet.google.com/', '') || '';
-
-    const sessionId = 'session_' + Date.now().toString(36);
-    const newSession = {
-      id: sessionId,
+    // Call SkillSync backend to atomically create the ONE session & ONE Google Meet space.
+    // The backend's idempotency and concurrency locking guarantees that only ONE Google Meet space is created.
+    const createdSession = await api.createSession({
       title: title || `${skill} Peer Learning Session`,
       skill,
-      learnerId: currentUser.uid,
       teacherId: peerId,
+      learnerId: currentUser.uid,
       scheduledAt,
       duration: Number(duration),
-      durationMinutes: Number(duration),
-      status: 'scheduled',
-      meeting: {
-        provider: 'google_meet',
-        spaceName: realSpaceName,
-        meetingUri: realMeetingUri // EXACT URI RETURNED BY GOOGLE
-      },
-      meetingUri: realMeetingUri,
-      meetingCode: realMeetingCode,
-      calendarLink: res.calendarLink || '',
       agenda: agenda.length > 0 ? agenda : [
-        `Introduction and key objectives for ${skill}`,
-        `Step-by-step screen share & live exercises`,
-        `Q&A and follow-up resources`
-      ],
-      createdAt: new Date().toISOString()
-    };
+        `Intro and learning goals for ${skill}`,
+        `Hands-on walkthrough and live practice`,
+        `Q&A, next steps, and resource exchange`
+      ]
+    });
 
-    setSessions(prev => [newSession, ...prev.filter(s => s.id !== sessionId)]);
-    broadcast?.postMessage({ type: 'NEW_SESSION', payload: newSession });
+    const realMeetingUri = createdSession.meetingUri || createdSession.meeting?.meetingUri;
+    const realSpaceName = createdSession.meetSpaceName || createdSession.meeting?.spaceName || '';
+    const sessionId = createdSession.id;
 
-    // Save to Firestore if live credentials are configured
+    // Immediately update local state
+    setSessions(prev => [createdSession, ...prev.filter(s => s.id !== sessionId)]);
+    broadcast?.postMessage({ type: 'NEW_SESSION', payload: createdSession });
+
+    // Save to Firestore so both users read the SAME document in Firestore (non-blocking with timeout)
     if (isFirebaseLive) {
-      await createFirestoreSession(newSession);
+      Promise.race([
+        createFirestoreSession({
+          ...createdSession,
+          sessionId,
+          meetingUri: realMeetingUri,
+          meetSpaceName: realSpaceName
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore write timeout')), 3000))
+      ]).catch(err => {
+        console.warn('[SyncContext] Firestore session sync note:', err.message);
+      });
     }
 
     // Notify peer
@@ -441,32 +500,49 @@ export function SyncProvider({ children }) {
       'session_scheduled'
     );
 
-    // Also auto-post a meeting invite card message into their chat
-    const conn = connections.find(c => c.userIds.includes(currentUser.uid) && c.userIds.includes(peerId));
-    if (conn) {
+    // Auto-sync meeting card message into chat
+    const conn = connections.find(c => c.userIds?.includes(currentUser.uid) && c.userIds?.includes(peerId));
+    if (conn && realMeetingUri) {
+      const meetMsgId = `session_created_${sessionId}`;
+      const d = new Date(scheduledAt);
+      const dateFormatted = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      const timeFormatted = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
       const meetMsg = {
-        id: 'msg_meet_' + Date.now().toString(36),
+        id: meetMsgId,
         connectionId: conn.id,
         senderId: currentUser.uid,
-        text: `📅 Scheduled a session for "${skill}" on ${new Date(scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}!\nGoogle Meet Link: ${realMeetingUri}`,
+        receiverId: peerId,
+        text: `Learning session scheduled!\n\nSkill: ${skill}\nDate: ${dateFormatted}\nTime: ${timeFormatted}\nDuration: ${duration} minutes\n\nJoin Google Meet:\n${realMeetingUri}`,
+        type: 'meeting',
+        sessionId,
+        meetingUri: realMeetingUri,
+        meetSpaceName: realSpaceName,
         createdAt: new Date().toISOString()
       };
-      setMessages(prev => ({
-        ...prev,
-        [conn.id]: [...(prev[conn.id] || []), meetMsg]
-      }));
+
+      setMessages(prev => {
+        const list = prev[conn.id] || [];
+        if (list.some(m => m.id === meetMsgId || m.sessionId === sessionId)) {
+          return prev;
+        }
+        return {
+          ...prev,
+          [conn.id]: [...list, meetMsg]
+        };
+      });
+
       broadcast?.postMessage({
         type: 'NEW_MESSAGE',
         payload: { connectionId: conn.id, message: meetMsg }
       });
+
       if (isFirebaseLive) {
         sendFirestoreMessage(conn.id, meetMsg).catch(() => {});
       }
     }
 
-    api.createSession(newSession).catch(() => {});
-
-    return newSession;
+    return createdSession;
   };
 
   // 5. Complete Session & Award Base Credits
@@ -481,25 +557,26 @@ export function SyncProvider({ children }) {
       updateFirestoreSession(sessionId, { status: 'completed', completedAt: new Date().toISOString() }).catch(() => {});
     }
 
-    // Award credits to Teacher (+20) and Learner (+10)
-    const teacher = allUsers.find(u => u.uid === targetSession.teacherId);
-    const learner = allUsers.find(u => u.uid === targetSession.learnerId);
+    // Server handles updating credits & sessions on both teacher & learner in database
+    await api.completeSession(sessionId).catch(() => {});
 
-    if (teacher) {
-      saveUser({
-        ...teacher,
-        credits: (teacher.credits || 0) + 20,
-        sessionsTaught: (teacher.sessionsTaught || 0) + 1,
-        sessionsCompleted: (teacher.sessionsCompleted || 0) + 1
-      });
-    }
-    if (learner) {
-      saveUser({
-        ...learner,
-        credits: (learner.credits || 0) + 10,
-        sessionsLearned: (learner.sessionsLearned || 0) + 1,
-        sessionsCompleted: (learner.sessionsCompleted || 0) + 1
-      });
+    // Update only currentUser's own credits locally
+    if (currentUser?.uid) {
+      if (currentUser.uid === targetSession.teacherId) {
+        saveUser({
+          ...currentUser,
+          credits: (currentUser.credits || 0) + 20,
+          sessionsTaught: (currentUser.sessionsTaught || 0) + 1,
+          sessionsCompleted: (currentUser.sessionsCompleted || 0) + 1
+        });
+      } else if (currentUser.uid === targetSession.learnerId) {
+        saveUser({
+          ...currentUser,
+          credits: (currentUser.credits || 0) + 10,
+          sessionsLearned: (currentUser.sessionsLearned || 0) + 1,
+          sessionsCompleted: (currentUser.sessionsCompleted || 0) + 1
+        });
+      }
     }
 
     notifyUser(
@@ -509,8 +586,6 @@ export function SyncProvider({ children }) {
       '/sessions',
       'session_completed'
     );
-
-    api.completeSession(sessionId).catch(() => {});
   };
 
   // 6. Submit Feedback & Rating
@@ -535,37 +610,25 @@ export function SyncProvider({ children }) {
       createFirestoreFeedback(feedbackItem).catch(() => {});
     }
 
-    // Update target reviewee user profile
-    const targetUser = allUsers.find(u => u.uid === revieweeId);
-    if (targetUser) {
-      const allTargetFeedbacks = [...feedback.filter(f => f.revieweeId === revieweeId), feedbackItem];
-      const sum = allTargetFeedbacks.reduce((acc, f) => acc + f.rating, 0);
-      const newRating = Number((sum / allTargetFeedbacks.length).toFixed(1));
+    // Call backend API to record feedback and recalculate target user rating & credits on server
+    await api.submitFeedback({
+      sessionId,
+      reviewerId,
+      revieweeId,
+      rating,
+      comment,
+      whatLearned,
+      usefulness,
+      wouldLearnAgain
+    }).catch(() => {});
 
-      let bonusCredits = 0;
-      if (Number(rating) === 5) bonusCredits += 5;
-
-      const updatedBadges = [...(targetUser.badges || [])];
-      if (newRating >= 4.8 && !updatedBadges.includes('5-Star Mentor')) {
-        updatedBadges.push('5-Star Mentor');
-      }
-
-      saveUser({
-        ...targetUser,
-        rating: newRating,
-        reviewCount: allTargetFeedbacks.length,
-        credits: (targetUser.credits || 0) + bonusCredits,
-        badges: updatedBadges
-      });
-
-      notifyUser(
-        revieweeId,
-        'New Feedback Received!',
-        `${currentUser.name} rated your session ${rating} ★: "${comment || 'Great experience!'}"`,
-        `/profile/${revieweeId}`,
-        'feedback_received'
-      );
-    }
+    notifyUser(
+      revieweeId,
+      'New Feedback Received!',
+      `${currentUser?.name || 'A student'} rated your session ${rating} ★: "${comment || 'Great experience!'}"`,
+      `/profile/${revieweeId}`,
+      'feedback_received'
+    );
 
     // Celebration confetti
     try {
@@ -598,6 +661,7 @@ export function SyncProvider({ children }) {
       sendConnectionRequest,
       respondToConnectionRequest,
       sendMessage,
+      loadMessages,
       scheduleSession,
       completeSession,
       submitFeedback,

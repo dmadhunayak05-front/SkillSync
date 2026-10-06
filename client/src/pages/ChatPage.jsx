@@ -13,6 +13,17 @@ export default function ChatPage({ connectionId: initialConnId, onNavigate }) {
     initialConnId || userConnections[0]?.id || null
   );
 
+  // [MESSAGES DEBUG] Logging required by Section 10
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    console.log('=== [MESSAGES DEBUG] ===');
+    console.log('authUid:', currentUser.uid);
+    console.log('authEmail:', currentUser.email);
+    console.log('name:', currentUser.name);
+    console.log('Active chats:', userConnections.length);
+    console.log('========================');
+  }, [currentUser?.uid, currentUser?.email, currentUser?.name, userConnections.length]);
+
   useEffect(() => {
     if (initialConnId) {
       setSelectedConnId(initialConnId);

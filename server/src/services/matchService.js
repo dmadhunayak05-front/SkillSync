@@ -67,19 +67,26 @@ export function calculateMatch(currentUser, peerUser) {
     availScore = 0.7;
   }
 
-  // Calculate weighted total (scaled to 100)
-  // Base floor for college peer compatibility is 30% if they have at least 1 overlapping field
-  const weighted = (directScore * 40) + (reciprocalScore * 25) + (interestScore * 20) + (availScore * 15);
-  
-  // Natural rounding between 45% and 98%
-  let score = Math.round(weighted);
-  if (directSkills.length > 0 && reciprocalSkills.length > 0) {
-    // Perfect bilateral reciprocal match! e.g. Python <-> UI/UX
-    score = Math.max(92, Math.min(98, score + 12));
-  } else if (directSkills.length > 0) {
-    score = Math.max(70, Math.min(89, score + 10));
+  // Real deterministic scoring based on actual skills and interests
+  const hasDirectMatch = directSkills.length > 0;
+  const hasReciprocalMatch = reciprocalSkills.length > 0;
+  const hasInterestMatch = sharedInterests.length > 0;
+
+  let score = 0;
+  if (hasDirectMatch || hasReciprocalMatch || hasInterestMatch) {
+    const raw = (directScore * 55) + (reciprocalScore * 30) + (interestScore * 15);
+    score = Math.round(raw);
+    if (hasDirectMatch && hasReciprocalMatch) {
+      score = Math.min(99, Math.max(85, score + 10));
+    } else if (hasDirectMatch) {
+      score = Math.min(90, Math.max(60, score));
+    } else if (hasReciprocalMatch) {
+      score = Math.min(75, Math.max(40, score));
+    } else {
+      score = Math.min(45, Math.max(15, score));
+    }
   } else {
-    score = Math.max(40, Math.min(65, score));
+    score = 0;
   }
 
   // Generate actionable, clear reasons for "Why you match"

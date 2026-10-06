@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSync } from '../context/SyncContext';
 import { calculateMatch } from '../utils/matching';
@@ -23,6 +23,13 @@ export default function DiscoverPage({ onNavigate, initialQuery = '' }) {
   const [minMatch, setMinMatch] = useState(0);
   const [selectedStudentForConnect, setSelectedStudentForConnect] = useState(null);
 
+  // Sync search input with initialQuery prop passed from global Navbar search
+  useEffect(() => {
+    if (initialQuery !== undefined) {
+      setSearchQuery(initialQuery);
+    }
+  }, [initialQuery]);
+
   // Compute matches for other students
   const matchResults = useMemo(() => {
     const others = allUsers.filter(u => u.uid !== currentUser?.uid);
@@ -39,15 +46,18 @@ export default function DiscoverPage({ onNavigate, initialQuery = '' }) {
   // Filter students based on search and category
   const filteredStudents = useMemo(() => {
     return matchResults.filter(({ student, score }) => {
-      // 1. Search Query
+      // 1. Search Query: matches name, email, college, course, skills to teach, skills to learn, interests, bio
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const matchesName = student.name.toLowerCase().includes(q);
+        const matchesName = student.name?.toLowerCase().includes(q);
+        const matchesEmail = student.email?.toLowerCase().includes(q);
         const matchesCollege = student.college?.toLowerCase().includes(q);
+        const matchesCourse = student.course?.toLowerCase().includes(q);
         const matchesTeach = (student.skillsToTeach || []).some(s => s.toLowerCase().includes(q));
         const matchesLearn = (student.skillsToLearn || []).some(s => s.toLowerCase().includes(q));
+        const matchesInterests = (student.interests || []).some(i => i.toLowerCase().includes(q));
         const matchesBio = student.bio?.toLowerCase().includes(q);
-        if (!matchesName && !matchesCollege && !matchesTeach && !matchesLearn && !matchesBio) {
+        if (!matchesName && !matchesEmail && !matchesCollege && !matchesCourse && !matchesTeach && !matchesLearn && !matchesInterests && !matchesBio) {
           return false;
         }
       }

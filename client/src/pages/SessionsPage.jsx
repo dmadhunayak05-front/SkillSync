@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSync } from '../context/SyncContext';
 import LiveMeetingWorkspace from '../components/sessions/LiveMeetingWorkspace';
@@ -13,26 +13,51 @@ import {
   Star, 
   Plus,
   ArrowRight,
-  MessageSquare
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 import { StatusBadge } from '../components/common/Badge';
 
 export default function SessionsPage({ initialSessionId, onNavigate }) {
-  const { currentUser, allUsers } = useAuth();
+  const { user, currentUser, allUsers, loading: authLoading } = useAuth();
   const { sessions, completeSession } = useSync();
 
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming', 'completed', 'all'
-  const [activeWorkspaceSession, setActiveWorkspaceSession] = useState(
-    initialSessionId ? sessions.find(s => s.id === initialSessionId) : null
-  );
+  const [activeWorkspaceSession, setActiveWorkspaceSession] = useState(null);
   const [feedbackSession, setFeedbackSession] = useState(null);
+  const [error, setError] = useState(null);
 
-  const userSessions = sessions.filter(
-    s => s.learnerId === currentUser?.uid || s.teacherId === currentUser?.uid
+  // Authenticated user ID is strictly derived from Firebase Auth
+  const currentUid = user?.uid || currentUser?.uid;
+
+  // Requirement 10: Mandatory Debug Logging
+  useEffect(() => {
+    console.log("[LIVE SESSIONS DEBUG]", {
+      authUid: user?.uid || currentUser?.uid,
+      authEmail: user?.email || currentUser?.email,
+      sessionCount: sessions?.length,
+      sessions
+    });
+    console.log("[ROUTE DEBUG] /live-sessions loaded");
+  }, [user?.uid, currentUser?.uid, sessions]);
+
+  // Sync initialSessionId to activeWorkspaceSession safely
+  useEffect(() => {
+    if (initialSessionId && Array.isArray(sessions)) {
+      const match = sessions.find(s => s && s.id === initialSessionId);
+      if (match) {
+        setActiveWorkspaceSession(match);
+      }
+    }
+  }, [initialSessionId, sessions]);
+
+  // Safe filter: guaranteed to handle null/undefined sessions and multi-user isolation
+  const userSessions = (Array.isArray(sessions) ? sessions : []).filter(
+    s => s && (s.learnerId === currentUid || s.teacherId === currentUid)
   );
 
-  const upcomingSessions = userSessions.filter(s => s.status === 'scheduled');
-  const completedSessions = userSessions.filter(s => s.status === 'completed');
+  const upcomingSessions = userSessions.filter(s => s && s.status === 'scheduled');
+  const completedSessions = userSessions.filter(s => s && s.status === 'completed');
 
   const displayedSessions = activeTab === 'upcoming' 
     ? upcomingSessions 
@@ -41,12 +66,62 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
     : userSessions;
 
   const handleMarkCompleted = async (sessionId) => {
-    await completeSession(sessionId);
-    const updated = sessions.find(s => s.id === sessionId);
-    if (updated) {
-      setFeedbackSession(updated);
+    try {
+      await completeSession(sessionId);
+      const updated = sessions.find(s => s && s.id === sessionId);
+      if (updated) {
+        setFeedbackSession(updated);
+      }
+    } catch (err) {
+      console.error("[LIVE SESSIONS ERROR] Failed to complete session:", err);
+      setError("Unable to update session status. Please try again.");
     }
   };
+
+  // Safe date/time formatting helper: prevents invalid date string crashes
+  const formatSessionTime = (rawDate) => {
+    if (!rawDate) return 'Time to be scheduled';
+    try {
+      const d = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
+      if (isNaN(d.getTime())) return 'Scheduled session';
+      const dateStr = d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+      const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `${dateStr} at ${timeStr}`;
+    } catch (e) {
+      return 'Scheduled session';
+    }
+  };
+
+  // Requirement 8: Explicit loading state while auth or sessions are resolving
+  if (authLoading && !currentUser) {
+    return (
+      <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-xs space-y-3">
+        <div className="w-10 h-10 border-3 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto" />
+        <h3 className="text-base font-extrabold text-slate-900">Loading sessions...</h3>
+        <p className="text-xs text-slate-500">Checking your authenticated schedule...</p>
+      </div>
+    );
+  }
+
+  // Requirement 9: Error state display if an error is encountered
+  if (error) {
+    return (
+      <div className="bg-white rounded-3xl p-8 border border-rose-200 shadow-xs text-center space-y-3 max-w-lg mx-auto">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6" />
+        </div>
+        <h3 className="text-base font-extrabold text-slate-900">Unable to load learning sessions</h3>
+        <p className="text-xs text-slate-500">{error}</p>
+        <button
+          onClick={() => setError(null)}
+          className="py-2 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs inline-flex items-center gap-1.5 transition-colors"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Retry</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-16">
@@ -62,7 +137,7 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
           </button>
           <LiveMeetingWorkspace
             session={activeWorkspaceSession}
-            peerUser={allUsers.find(u => u.uid === (activeWorkspaceSession.teacherId === currentUser?.uid ? activeWorkspaceSession.learnerId : activeWorkspaceSession.teacherId))}
+            peerUser={allUsers.find(u => u && u.uid === (activeWorkspaceSession.teacherId === currentUid ? activeWorkspaceSession.learnerId : activeWorkspaceSession.teacherId))}
             onCompleteSession={handleMarkCompleted}
             onOpenFeedback={() => setFeedbackSession(activeWorkspaceSession)}
           />
@@ -131,10 +206,11 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
 
           {/* Sessions List */}
           {displayedSessions.length === 0 ? (
+            /* Requirement 8: Empty state */
             <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-xs space-y-3">
               <Calendar className="w-10 h-10 text-slate-300 mx-auto" />
               <h3 className="text-base font-extrabold text-slate-900">
-                {activeTab === 'upcoming' ? 'No upcoming sessions' : 'No sessions found'}
+                {activeTab === 'upcoming' ? 'No upcoming learning sessions' : 'No sessions found'}
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 {activeTab === 'upcoming' 
@@ -153,14 +229,18 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
           ) : (
             <div className="space-y-4">
               {displayedSessions.map((session) => {
-                const peerId = session.teacherId === currentUser?.uid ? session.learnerId : session.teacherId;
-                const peer = allUsers.find(u => u.uid === peerId) || session.peer || (session.teacherId === currentUser?.uid ? session.learner : session.teacher) || {
-                  name: session.teacherId === currentUser?.uid ? 'Student Partner' : 'Skill Mentor',
+                if (!session || !session.id) return null;
+
+                const isTeacher = session.teacherId === currentUid;
+                const peerId = isTeacher ? session.learnerId : session.teacherId;
+                const peer = allUsers.find(u => u && u.uid === peerId) || session.peer || (isTeacher ? session.learner : session.teacher) || {
+                  name: isTeacher ? 'Student Partner' : 'Skill Mentor',
                   photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${peerId || 'peer'}`,
                   college: 'SkillSync Network'
                 };
-                const isTeacher = session.teacherId === currentUser?.uid;
                 const isCompleted = session.status === 'completed';
+                const meetUri = session.meeting?.meetingUri || session.meetingUri;
+                const sessionTitle = session.title || session.topic || (session.skill ? `Learning Session: ${session.skill}` : 'Skill Exchange Session');
 
                 return (
                   <div
@@ -176,7 +256,7 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
                       />
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-extrabold text-base text-slate-900">{session.title}</h3>
+                          <h3 className="font-extrabold text-base text-slate-900">{sessionTitle}</h3>
                           <StatusBadge status={session.status} />
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700">
                             {isTeacher ? 'You are Teaching' : 'You are Learning'}
@@ -184,16 +264,16 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
                         </div>
 
                         <p className="text-xs font-medium text-slate-500">
-                          With <strong>{peer?.name}</strong> • {peer?.college}
+                          With <strong>{peer?.name || 'Peer Student'}</strong> • {peer?.college || 'SkillSync'}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 pt-1">
                           <span className="flex items-center gap-1 font-semibold text-slate-800">
                             <Clock className="w-3.5 h-3.5 text-brand-600" />
-                            {new Date(session.scheduledAt).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} at {new Date(session.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {formatSessionTime(session.scheduledAt)}
                           </span>
                           <span>•</span>
-                          <span>{session.duration} minutes</span>
+                          <span>{session.duration || 60} minutes</span>
                           <span>•</span>
                           <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                             {isTeacher ? '+20 credits' : '+10 credits'}
@@ -207,9 +287,10 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
                       
                       {!isCompleted ? (
                         <>
-                          {Boolean(session.meeting?.meetingUri || session.meetingUri) && (
+                          {/* Requirement 7: Reuses the existing stored meetingUri */}
+                          {Boolean(meetUri) && (
                             <a
-                              href={session.meeting?.meetingUri || session.meetingUri}
+                              href={meetUri}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 transition-all shadow-sm"
@@ -263,10 +344,11 @@ export default function SessionsPage({ initialSessionId, onNavigate }) {
 
       {/* Feedback Modal */}
       {feedbackSession && (() => {
-        const peerId = feedbackSession.teacherId === currentUser?.uid ? feedbackSession.learnerId : feedbackSession.teacherId;
-        const peer = allUsers.find(u => u.uid === peerId) || feedbackSession.peer || (feedbackSession.teacherId === currentUser?.uid ? feedbackSession.learner : feedbackSession.teacher) || {
+        const isTeacher = feedbackSession.teacherId === currentUid;
+        const peerId = isTeacher ? feedbackSession.learnerId : feedbackSession.teacherId;
+        const peer = allUsers.find(u => u && u.uid === peerId) || feedbackSession.peer || (isTeacher ? feedbackSession.learner : feedbackSession.teacher) || {
           uid: peerId,
-          name: feedbackSession.teacherId === currentUser?.uid ? 'Student Partner' : 'Skill Mentor',
+          name: isTeacher ? 'Student Partner' : 'Skill Mentor',
           photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${peerId || 'peer'}`
         };
         return (

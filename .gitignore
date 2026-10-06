@@ -9,3 +9,4 @@ dist/
 build/
 server/src/data/google_config.json
 server/src/data/google_tokens.json
+scratch/

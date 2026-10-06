@@ -155,6 +155,14 @@ export default function ScheduleModal({ isOpen, onClose, peerUser, preselectedSk
     }
 
     setLoading(true);
+    setError('');
+
+    // Safety timeout: stop spinner after 25s no matter what (Requirement 7 & 12)
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+      setError('Unable to create the learning session in time. Please check your connection and try again.');
+    }, 25000);
+
     try {
       const session = await scheduleSession({
         title: title.trim() || `${skill} Peer Learning Session`,
@@ -169,17 +177,20 @@ export default function ScheduleModal({ isOpen, onClose, peerUser, preselectedSk
         ]
       });
 
+      clearTimeout(safetyTimer);
       setCreatedSession(session);
       if (onScheduled) onScheduled(session);
     } catch (err) {
-      console.warn('Session scheduling failed:', err);
+      clearTimeout(safetyTimer);
+      console.error('[SCHEDULE ERROR]', err);
       if (err.code === 'GOOGLE_AUTH_REQUIRED' || err.message?.includes('Google Meet access is required')) {
         setAuthRequired(true);
         setError('Google Meet access is required to create a live session.');
       } else {
-        setError(err.message || 'Failed to schedule session');
+        setError(err.message || 'Unable to create the learning session. Please try again.');
       }
     } finally {
+      clearTimeout(safetyTimer);
       setLoading(false);
     }
   };
@@ -499,13 +510,13 @@ export default function ScheduleModal({ isOpen, onClose, peerUser, preselectedSk
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-brand-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                disabled={loading || authorizing || savingCreds}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-brand-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Requesting Google Meet API...</span>
+                    <span>Creating session & Google Meet...</span>
                   </>
                 ) : (
                   <>
